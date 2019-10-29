@@ -142,6 +142,11 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <scm>
+        <connection>scm:git:https://github.com/UnionVMS/UVMS-Stream-Collector.git</connection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
