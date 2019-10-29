@@ -10,7 +10,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.StreamCollector</groupId>
     <artifactId>StreamCollector</artifactId>
-    <version>0.9.1</version>
+    <version>0.9.2-SNAPSHOT</version>
     <packaging>ear</packaging>
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
@@ -142,7 +142,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-Stream-Collector.git</connection>
-        <tag>StreamCollector-0.9.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
