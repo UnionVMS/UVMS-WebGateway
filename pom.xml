@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -12,7 +10,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.StreamCollector</groupId>
     <artifactId>StreamCollector</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.9.0</version>
     <packaging>war</packaging>
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
@@ -144,7 +142,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-Stream-Collector.git</connection>
-        <tag>HEAD</tag>
+        <tag>StreamCollector-0.9.0</tag>
     </scm>
 
     <build>
