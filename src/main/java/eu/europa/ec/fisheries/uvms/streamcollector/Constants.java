@@ -16,7 +16,7 @@ public class Constants {
     public static final String ALL = "All";
     public static final String EVENT = "event";
     public static final String SUBSCRIBERLIST = "subscribers";
-    public static final String TOPIC_NAME = "RealtimeUpdate";
+    public static final String TOPIC_NAME = "EventStream";
 
 
 

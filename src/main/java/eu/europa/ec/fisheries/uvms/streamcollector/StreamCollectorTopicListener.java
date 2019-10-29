@@ -26,9 +26,8 @@ import javax.jms.TextMessage;
 import java.util.Arrays;
 import java.util.List;
 
-@MessageDriven(mappedName = "jms/topic/EventBus", activationConfig = {
+@MessageDriven(mappedName = "jms/topic/EventStream", activationConfig = {
     @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"),
-    //@ActivationConfigProperty(propertyName = "subscriptionDurability", propertyValue = "Durable"),
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
     @ActivationConfigProperty(propertyName = "destination", propertyValue = Constants.TOPIC_NAME)
 })
