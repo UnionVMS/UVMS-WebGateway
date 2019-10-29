@@ -22,6 +22,9 @@
         <installAtEnd>false</installAtEnd>
 
         <jackson.version>2.10.0</jackson.version>
+
+        <docker.dev.start.phase>test-compile</docker.dev.start.phase>
+        <docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
     </properties>
 
 
