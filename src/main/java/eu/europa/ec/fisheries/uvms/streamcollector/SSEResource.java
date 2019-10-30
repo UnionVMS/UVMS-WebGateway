@@ -2,6 +2,8 @@ package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Gauge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +17,6 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
-import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -78,6 +79,11 @@ public class SSEResource {
         String user = securityContext.getUserPrincipal().getName();
         userSinks.add(new UserSseEventSink(user, sseEventSink));
         sseEventSink.send(sse.newEvent("User " + user + " is now registered"));
+    }
+
+    @Gauge(unit = MetricUnits.NONE, name = "StreamCollector_current_number_of_subscribers", absolute = true)
+    public int getCurrentNumberOfSubscribers(){
+        return userSinks.size();
     }
 
     private OutboundSseEvent createSseEvent(String data, String eventName) {

@@ -11,7 +11,7 @@
     <groupId>eu.europa.ec.fisheries.uvms.stream-collector</groupId>
     <artifactId>stream-collector</artifactId>
     <version>0.9.3-SNAPSHOT</version>
-    <packaging>ear</packaging>
+    <packaging>war</packaging>
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
     <properties>
@@ -34,12 +34,6 @@
         </dependency>
         <dependency>
             <groupId>fish.focus.uvms.maven</groupId>
-            <artifactId>uvms-pom-gis-deps</artifactId>
-            <version>2.2</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-logging-deps</artifactId>
             <version>2.2</version>
             <type>pom</type>
@@ -55,12 +49,14 @@
             <artifactId>uvms-pom-test-deps</artifactId>
             <version>2.2</version>
             <type>pom</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-arquillian-deps</artifactId>
             <version>2.2</version>
             <type>pom</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
@@ -116,6 +112,12 @@
             <artifactId>guava</artifactId>
             <version>28.1-jre</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.metrics</groupId>
+            <artifactId>microprofile-metrics-api</artifactId>
+            <version>2.0.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
