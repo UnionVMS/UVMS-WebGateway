@@ -23,6 +23,7 @@
 
         <docker.dev.start.phase>test-compile</docker.dev.start.phase>
         <docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
+        <docker.dev.stop.phase>verify</docker.dev.stop.phase>
     </properties>
 
 
