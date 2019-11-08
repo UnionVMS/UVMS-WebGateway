@@ -11,7 +11,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.stream-collector</groupId>
     <artifactId>stream-collector</artifactId>
-    <version>0.9.6-SNAPSHOT</version>
+    <version>0.9.6</version>
     <packaging>war</packaging>
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
@@ -165,7 +165,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-Stream-Collector.git</connection>
-        <tag>HEAD</tag>
+        <tag>stream-collector-0.9.6</tag>
     </scm>
 
     <build>
