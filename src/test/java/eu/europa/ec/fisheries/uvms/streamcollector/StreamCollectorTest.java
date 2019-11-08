@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +67,35 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         source.open();
         String testData = "test data";
         String testEvent = "test event";
-        sendDataAsJMSMessageToStream(testData, testEvent, null);
+        sendDataAsJMSMessageToStream(testData, testEvent, null, null);
+        Thread.sleep(100);
+
+        assertTrue(eventString, eventString.contains(testEvent));
+        assertTrue(dataString, dataString.contains(testData));
+        source.close();
+    }
+
+    @Test
+    public void sendMessageWithMovementSourceOnQueueAndCatchItOnSseStream() throws Exception {
+        SseEventSource source = createSSEEventSource();
+        source.open();
+        String testData = "test data";
+        String testEvent = "test event";
+        sendDataAsJMSMessageToStream(testData, testEvent, null, MovementSourceType.MANUAL.value());
+        Thread.sleep(100);
+
+        assertTrue(eventString, eventString.contains(testEvent));
+        assertTrue(dataString, dataString.contains(testData));
+        source.close();
+    }
+
+    @Test
+    public void listenToMovementSourceManualAndCatchMoveSourceManual() throws Exception {
+        SseEventSource source = createSSEEventSourceWithMovementSourceParam(MovementSourceType.MANUAL.value());
+        source.open();
+        String testData = "test data";
+        String testEvent = "test event";
+        sendDataAsJMSMessageToStream(testData, testEvent, null, MovementSourceType.MANUAL.value());
         Thread.sleep(100);
 
         assertTrue(eventString, eventString.contains(testEvent));
@@ -80,7 +109,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         source.open();
         String testData = "test data";
         String testEvent = "test event";
-        sendDataAsJMSMessageToStream(testData, testEvent, Arrays.asList("user"));
+        sendDataAsJMSMessageToStream(testData, testEvent, Arrays.asList("user"), null);
         Thread.sleep(100);
 
         assertTrue(eventString, eventString.contains(testEvent));
@@ -94,7 +123,21 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         source.open();
         String testData = "test data";
         String testEvent = "test event";
-        sendDataAsJMSMessageToStream(testData, testEvent, Arrays.asList("NOT user"));
+        sendDataAsJMSMessageToStream(testData, testEvent, Arrays.asList("NOT user"), null);
+        Thread.sleep(1000);
+
+        assertFalse(eventString, eventString.contains(testEvent));
+        assertFalse(dataString, dataString.contains(testData));
+        source.close();
+    }
+
+    @Test
+    public void sendMessageIncludingOtherMovementSourceOnQueueAndWatchTheSseStreamSoThatItDoesNotAppear() throws Exception {
+        SseEventSource source = createSSEEventSourceWithMovementSourceParam(MovementSourceType.OTHER.value());
+        source.open();
+        String testData = "test data";
+        String testEvent = "test event";
+        sendDataAsJMSMessageToStream(testData, testEvent, null, MovementSourceType.MANUAL.value());
         Thread.sleep(1000);
 
         assertFalse(eventString, eventString.contains(testEvent));
@@ -115,11 +158,24 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         return source;
     }
 
-    private void sendDataAsJMSMessageToStream(String data, String eventName, List<String> subscriberList) throws JMSException, JsonProcessingException {
+    private SseEventSource createSSEEventSourceWithMovementSourceParam(String movementSource){
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target("http://localhost:8080/test/rest/sse/subscribe").queryParam("sources", movementSource);
+        AuthorizationHeaderWebTarget jwtTarget = new AuthorizationHeaderWebTarget(target, getToken());
+
+        SseEventSource source = SseEventSource.target(jwtTarget).reconnectingEvery(1, TimeUnit.SECONDS).build();
+        source.register(onEvent, onError, onComplete);
+
+        return source;
+    }
+
+    private void sendDataAsJMSMessageToStream(String data, String eventName, List<String> subscriberList, String movementSource) throws JMSException, JsonProcessingException {
         TextMessage message = context.createTextMessage(data);
         message.setStringProperty(Constants.EVENT, eventName);
         String subscriberJson = (subscriberList == null || subscriberList.isEmpty() ? null :  om.writeValueAsString(subscriberList));
         message.setStringProperty(Constants.SUBSCRIBERLIST, subscriberJson);
+        message.setStringProperty(Constants.MOVEMENT_SOURCE, movementSource);
+
 
         Topic t = context.createTopic(Constants.TOPIC_NAME);
 

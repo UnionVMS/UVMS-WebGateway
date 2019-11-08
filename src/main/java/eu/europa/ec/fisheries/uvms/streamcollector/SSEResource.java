@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.eclipse.microprofile.metrics.MetricUnits;
@@ -11,12 +12,15 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -38,7 +42,7 @@ public class SSEResource {
         this.eventBuilder = sse.newEventBuilder();
     }
 
-    public void sendSSEEvent(String data, String eventName, List<String> subscriberList) {
+    public void sendSSEEvent(String data, String eventName, List<String> subscriberList, MovementSourceType movementSource) {
         try {
             if (data == null || eventName == null) {
                 LOG.error("Not going to send an sse event with a null payload/eventname");
@@ -54,7 +58,7 @@ public class SSEResource {
 
             userSinks.stream().forEach(userSink -> {
                 for (String subscription : subscriberList) {
-                    if (Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) {
+                    if ( (Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) && (movementSource == null || userSink.getSources().stream().anyMatch(source -> source.equals(movementSource))) ) {
                         LOG.debug("Broadcasting to {}", userSink.getUser());
                         userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
                             if (error != null) {
@@ -74,11 +78,24 @@ public class SSEResource {
     @GET
     @Path("subscribe")
     @Produces(MediaType.SERVER_SENT_EVENTS)
-    public void subscribe(@Context SseEventSink sseEventSink, @Context SecurityContext securityContext) {
+    public void subscribe(@Context SseEventSink sseEventSink, @Context SecurityContext securityContext, @QueryParam("sources") List<String> sources) {
+        List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
         sseEventSink.send(sse.newEvent("UVMS SSE Ticket notifications"));
         String user = securityContext.getUserPrincipal().getName();
-        userSinks.add(new UserSseEventSink(user, sseEventSink));
+        userSinks.add(new UserSseEventSink(user, sseEventSink, sourceTypes));
         sseEventSink.send(sse.newEvent("User " + user + " is now registered"));
+    }
+
+    private List<MovementSourceType> convertToMovementSourceTypes (List<String> sources) {
+        List<MovementSourceType> sourceTypes = new ArrayList<>();
+        if (sources == null || sources.isEmpty()) {
+            sourceTypes = Arrays.asList(MovementSourceType.values());
+        } else {
+            for (String source : sources) {
+                sourceTypes.add(MovementSourceType.fromValue(source));
+            }
+        }
+        return sourceTypes;
     }
 
     @Gauge(unit = MetricUnits.NONE, name = "StreamCollector_current_number_of_sse_stream_subscribers", absolute = true)
@@ -97,10 +114,12 @@ public class SSEResource {
 
     private class UserSseEventSink {
         private String user;
+        private List<MovementSourceType> sources;
         private SseEventSink eventSink;
 
-        public UserSseEventSink(String user, SseEventSink sseEventSink) {
+        public UserSseEventSink(String user, SseEventSink sseEventSink, List<MovementSourceType> sources) {
             this.user = user;
+            this.sources = sources;
             this.eventSink = sseEventSink;
         }
 
@@ -111,5 +130,7 @@ public class SSEResource {
         public SseEventSink getEventSink() {
             return eventSink;
         }
+
+        public List<MovementSourceType> getSources() {return sources; }
     }
 }

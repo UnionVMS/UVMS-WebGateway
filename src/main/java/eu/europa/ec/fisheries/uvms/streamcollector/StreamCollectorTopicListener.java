@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +48,11 @@ public class StreamCollectorTopicListener implements MessageListener {
             String eventName = textMessage.getStringProperty(Constants.EVENT);
             String subscriberJson = textMessage.getStringProperty(Constants.SUBSCRIBERLIST);
             List<String> subscriberList = (subscriberJson == null ? Arrays.asList(Constants.ALL) : om.readValue(subscriberJson, List.class));
+            String movementSourceString = textMessage.getStringProperty(Constants.MOVEMENT_SOURCE);
+            MovementSourceType sourceType = (movementSourceString == null ? null : MovementSourceType.fromValue(movementSourceString));
             String data = textMessage.getText();
 
-            sseResource.sendSSEEvent(data, eventName,subscriberList);
+            sseResource.sendSSEEvent(data, eventName,subscriberList, sourceType);
 
         }catch (Exception e){
             LOG.error(e.getMessage(),e);
