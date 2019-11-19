@@ -16,6 +16,11 @@
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
     <properties>
+        <application.name>${project.artifactId}</application.name>
+        <application.version>${project.version}</application.version>
+        <application.logfile>/app/logs/${project.artifactId}/${project.artifactId}.log</application.logfile>
+        <application.error.logfile>/app/logs/${project.artifactId}/${project.artifactId}-error.log</application.error.logfile>
+
         <docker.dev.version>3.40.4.w18</docker.dev.version>
         <usm4uvms.version>4.0.23</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
@@ -178,6 +183,22 @@
                     <goalPrefix>plugin</goalPrefix>
                     <outputDirectory>target/dir</outputDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${basedir}/src/main/resources/logging.properties</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

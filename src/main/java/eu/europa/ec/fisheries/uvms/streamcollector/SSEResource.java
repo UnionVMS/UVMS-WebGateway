@@ -84,6 +84,7 @@ public class SSEResource {
         String user = securityContext.getUserPrincipal().getName();
         userSinks.add(new UserSseEventSink(user, sseEventSink, sourceTypes));
         sseEventSink.send(sse.newEvent("User " + user + " is now registered"));
+        LOG.info("User " + user + " is now registered");
     }
 
     private List<MovementSourceType> convertToMovementSourceTypes (List<String> sources) {
