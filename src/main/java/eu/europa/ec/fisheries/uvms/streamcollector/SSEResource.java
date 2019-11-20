@@ -52,6 +52,7 @@ public class SSEResource {
 
             userSinks.stream().forEach(userSink -> {
                 if (userSink.getEventSink().isClosed()) {
+                    LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
                     userSinks.remove(userSink);
                 }
             });
@@ -60,11 +61,21 @@ public class SSEResource {
                 for (String subscription : subscriberList) {
                     if ( (Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) && (movementSource == null || userSink.getSources().stream().anyMatch(source -> source.equals(movementSource))) ) {
                         LOG.debug("Broadcasting to {}", userSink.getUser());
-                        userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
-                            if (error != null) {
+                        try {
+                            userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
+                                if (error != null) {
+                                    LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
+                                    userSinks.remove(userSink);
+                                }
+                            });
+                        }catch (IllegalStateException e){
+                            if(e.getMessage().contains("SseEventSink is closed")){
+                                LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
                                 userSinks.remove(userSink);
+                            }else{
+                                throw new IllegalStateException(e);
                             }
-                        });
+                        }
                     }
                 }
             });
