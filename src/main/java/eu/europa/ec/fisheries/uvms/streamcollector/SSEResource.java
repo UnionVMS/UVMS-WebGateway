@@ -54,26 +54,25 @@ public class SSEResource {
                 if (userSink.getEventSink().isClosed()) {
                     LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
                     userSinks.remove(userSink);
-                }
-            });
 
-            userSinks.stream().forEach(userSink -> {
-                for (String subscription : subscriberList) {
-                    if ( (Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) && (movementSource == null || userSink.getSources().stream().anyMatch(source -> source.equals(movementSource))) ) {
-                        LOG.debug("Broadcasting to {}", userSink.getUser());
-                        try {
-                            userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
-                                if (error != null) {
-                                    LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
+                }else {
+                    for (String subscription : subscriberList) {
+                        if ((Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) && (movementSource == null || userSink.getSources().stream().anyMatch(source -> source.equals(movementSource)))) {
+                            LOG.debug("Broadcasting to {}", userSink.getUser());
+                            try {
+                                userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
+                                    if (error != null) {
+                                        LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
+                                        userSinks.remove(userSink);
+                                    }
+                                });
+                            } catch (IllegalStateException e) {
+                                if (e.getMessage().contains("SseEventSink is closed")) {
+                                    LOG.debug("Removing user " + userSink.getUser() + " from sse stream due to closed stream");
                                     userSinks.remove(userSink);
+                                } else {
+                                    throw new IllegalStateException(e);
                                 }
-                            });
-                        }catch (IllegalStateException e){
-                            if(e.getMessage().contains("SseEventSink is closed")){
-                                LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
-                                userSinks.remove(userSink);
-                            }else{
-                                throw new IllegalStateException(e);
                             }
                         }
                     }
