@@ -8,6 +8,7 @@ import org.eclipse.microprofile.metrics.annotation.Gauge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@ApplicationScoped
+@Singleton
 @Path("sse")
 @RequiresFeature(UnionVMSFeature.viewMovements)
 public class SSEResource {
