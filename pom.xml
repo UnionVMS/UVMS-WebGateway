@@ -66,7 +66,11 @@
             <scope>test</scope>
         </dependency>
 
-
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
+            <artifactId>uvms-commons-date</artifactId>
+            <version>4.0.11</version>
+        </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
             <artifactId>asset-client</artifactId>
@@ -74,8 +78,8 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-            <artifactId>movement-model</artifactId>
-            <version>5.2.33-UVMS</version>
+            <artifactId>movement-client</artifactId>
+            <version>5.2.36-UVMS-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.datatype</groupId>

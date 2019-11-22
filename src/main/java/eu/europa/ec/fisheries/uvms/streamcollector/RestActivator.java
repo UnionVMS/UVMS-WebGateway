@@ -28,7 +28,9 @@ public class RestActivator extends Application {
     private final Set<Class<?>> set = new HashSet<>();
 
     public RestActivator() {
+
         set.add(SSEResource.class);
+        set.add(ReportCollector.class);
     }
 
     @Override

@@ -3,6 +3,7 @@ package eu.europa.ec.fisheries.uvms.streamcollector;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,11 +47,13 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void worldsBestAndMostUsefulArqTest(){
         assertTrue(true);
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void connectToSSETest() throws InterruptedException {
         SseEventSource source = createSSEEventSource();
         source.open();
@@ -62,6 +65,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void sendMessageOnQueueAndCatchItOnSseStream() throws Exception {
         SseEventSource source = createSSEEventSource();
         source.open();
@@ -76,6 +80,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void sendMessageWithMovementSourceOnQueueAndCatchItOnSseStream() throws Exception {
         SseEventSource source = createSSEEventSource();
         source.open();
@@ -90,6 +95,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void listenToMovementSourceManualAndCatchMoveSourceManual() throws Exception {
         SseEventSource source = createSSEEventSourceWithMovementSourceParam(MovementSourceType.MANUAL.value());
         source.open();
@@ -104,6 +110,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void sendMessageIncludingSubscriberOnQueueAndCatchItOnSseStream() throws Exception {
         SseEventSource source = createSSEEventSource();
         source.open();
@@ -118,6 +125,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void sendMessageIncludingOtherSubscriberOnQueueAndWatchTheSseStreamSoThatItDoesNotAppear() throws Exception {
         SseEventSource source = createSSEEventSource();
         source.open();
@@ -132,6 +140,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     }
 
     @Test
+    @OperateOnDeployment("collector")
     public void sendMessageIncludingOtherMovementSourceOnQueueAndWatchTheSseStreamSoThatItDoesNotAppear() throws Exception {
         SseEventSource source = createSSEEventSourceWithMovementSourceParam(MovementSourceType.OTHER.value());
         source.open();
