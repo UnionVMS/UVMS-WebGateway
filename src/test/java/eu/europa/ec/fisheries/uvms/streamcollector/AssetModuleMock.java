@@ -1,12 +1,14 @@
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
+import eu.europa.ec.fisheries.uvms.asset.client.model.AssetListResponse;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetQuery;
 
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Path("/asset/rest/internal")
@@ -21,11 +23,16 @@ public class AssetModuleMock {
                                       @DefaultValue("100") @QueryParam("size") int size,
                                       @DefaultValue("true") @QueryParam("dynamic") boolean dynamic,
                                       @DefaultValue("false") @QueryParam("includeInactivated") boolean includeInactivated,
-                                      AssetQuery query){
+                                      String query){
+        AssetListResponse assetListResponse = new AssetListResponse();
+        assetListResponse.setCurrentPage(1);
+        assetListResponse.setTotalNumberOfPages(10);
+
         AssetDTO asset = new AssetDTO();
         asset.setId(UUID.randomUUID());
+        assetListResponse.setAssetList(Arrays.asList(asset));
 
-        return Response.ok(asset).build();
+        return Response.ok(assetListResponse).build();
 
     }
 

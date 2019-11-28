@@ -76,6 +76,7 @@ public abstract class BuildStreamCollectorDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
+        testWar.addClass(UnionVMSMock.class);
         testWar.addClass(MovementModuleMock.class);
         testWar.addClass(AssetModuleMock.class);
 
@@ -101,6 +102,7 @@ public abstract class BuildStreamCollectorDeployment {
                             UnionVMSFeature.viewMovements.getFeatureId(),
                             UnionVMSFeature.viewManualMovements.getFeatureId(),
                             UnionVMSFeature.manageAlarmsHoldingTable.getFeatureId(),
+                            UnionVMSFeature.viewVesselsAndMobileTerminals.getFeatureId(),
                             UnionVMSFeature.viewAlarmsHoldingTable.getFeatureId()));
         }
         return token;

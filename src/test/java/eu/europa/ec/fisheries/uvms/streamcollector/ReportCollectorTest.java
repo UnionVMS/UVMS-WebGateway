@@ -11,21 +11,29 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static org.junit.Assert.assertFalse;
+
 @RunWith(Arquillian.class)
 public class ReportCollectorTest extends BuildStreamCollectorDeployment {
 
     @Test
     @OperateOnDeployment("collector")
-    public void report1Test(){
+    public void report1Test() throws InterruptedException {
         ReportOneRequestDto request = new ReportOneRequestDto();
         request.setAssetQuery("Test");
 
+        //System.out.println("Now");
+        //Thread.sleep(1000 * 60 * 5);
+
         Response response = getWebTarget()
-                .path("reports/report1")
+                .path("reports")
+                .path("report1")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(request), Response.class);
-        String outupt = response.readEntity(String.class);
+        String output = response.readEntity(String.class);
+
+        assertFalse(output.isEmpty());
     }
 
 }
