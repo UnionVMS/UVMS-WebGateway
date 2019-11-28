@@ -44,7 +44,7 @@ public abstract class BuildStreamCollectorDeployment {
 
     private String token;
 
-    @Deployment
+    @Deployment(name = "collector", order = 2)
     public static Archive<?> createDeployment() {
 
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
@@ -57,7 +57,33 @@ public abstract class BuildStreamCollectorDeployment {
 
         testWar.delete("/WEB-INF/web.xml");
         testWar.addAsWebInfResource("mock-web.xml", "web.xml");
+
+        testWar.deleteClass(UnionVMSMock.class);
+        testWar.deleteClass(MovementModuleMock.class);
+        testWar.deleteClass(AssetModuleMock.class);
         
+        return testWar;
+    }
+
+    @Deployment(name = "uvms", order = 1)
+    public static Archive<?> createUVMSMock() {
+
+        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
+
+        File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
+                .importRuntimeAndTestDependencies()
+                .resolve(/*"eu.europa.ec.fisheries.uvms.asset:asset-client",
+                        "eu.europa.ec.fisheries.uvms.asset:asset-model",
+                        "eu.europa.ec.fisheries.uvms.movement:movement-model",
+                        "eu.europa.ec.fisheries.uvms:usm4uvms",
+                        "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message"*/)
+                .withTransitivity().asFile();
+        testWar.addAsLibraries(files);
+
+        testWar.addClass(UnionVMSMock.class);
+        testWar.addClass(MovementModuleMock.class);
+        testWar.addClass(AssetModuleMock.class);
+
         return testWar;
     }
 
@@ -80,6 +106,7 @@ public abstract class BuildStreamCollectorDeployment {
                             UnionVMSFeature.viewMovements.getFeatureId(),
                             UnionVMSFeature.viewManualMovements.getFeatureId(),
                             UnionVMSFeature.manageAlarmsHoldingTable.getFeatureId(),
+                            UnionVMSFeature.viewVesselsAndMobileTerminals.getFeatureId(),
                             UnionVMSFeature.viewAlarmsHoldingTable.getFeatureId()));
         }
         return token;
