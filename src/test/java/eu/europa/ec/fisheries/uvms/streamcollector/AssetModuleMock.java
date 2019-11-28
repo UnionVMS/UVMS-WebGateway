@@ -37,4 +37,18 @@ public class AssetModuleMock {
     }
 
 
+    @POST
+    @Path("queryIdOnly")
+    public Response getMockedAssetId(@DefaultValue("1") @QueryParam("page") int page,
+                                      @DefaultValue("100") @QueryParam("size") int size,
+                                      @DefaultValue("true") @QueryParam("dynamic") boolean dynamic,
+                                      @DefaultValue("false") @QueryParam("includeInactivated") boolean includeInactivated,
+                                      String query){
+
+
+        return Response.ok(Arrays.asList(UUID.randomUUID())).build();
+
+    }
+
+
 }

@@ -37,7 +37,7 @@ public class ReportCollector {
     @RequiresFeature(UnionVMSFeature.viewVesselsAndMobileTerminals)
     public Response getAssetList(ReportOneRequestDto request)  {
         List<AssetDTO> assets = assetClient.getAssetList(request.getAssetQuery(), request.getPage(), request.getSize(), request.isDynamic(), request.isIncludeInactivated());
-        List<String> assetIds = assets.stream().map(AssetDTO::getId).map(UUID::toString).collect(Collectors.toList());
+        List<String> assetIds = assetClient.getAssetIdList(request.getAssetQuery(), request.getPage(), request.getSize(), request.isDynamic(), request.isIncludeInactivated());
 
         return Response.ok(movementClient.getMicroMovementsForConnectIdsBetweenDates(assetIds, DateUtils.stringToDate(request.getStartDate()), DateUtils.stringToDate(request.getEndDate()), request.getSources())).build();
     }

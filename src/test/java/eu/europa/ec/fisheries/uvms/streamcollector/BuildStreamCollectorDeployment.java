@@ -57,6 +57,10 @@ public abstract class BuildStreamCollectorDeployment {
 
         testWar.delete("/WEB-INF/web.xml");
         testWar.addAsWebInfResource("mock-web.xml", "web.xml");
+
+        testWar.deleteClass(UnionVMSMock.class);
+        testWar.deleteClass(MovementModuleMock.class);
+        testWar.deleteClass(AssetModuleMock.class);
         
         return testWar;
     }
