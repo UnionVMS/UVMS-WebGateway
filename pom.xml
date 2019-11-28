@@ -79,7 +79,7 @@
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-client</artifactId>
-            <version>5.2.36-UVMS-SNAPSHOT</version>
+            <version>5.2.37-UVMS</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.datatype</groupId>

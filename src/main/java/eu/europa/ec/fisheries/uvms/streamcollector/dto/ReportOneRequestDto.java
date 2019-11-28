@@ -1,11 +1,13 @@
 package eu.europa.ec.fisheries.uvms.streamcollector.dto;
 
+import eu.europa.ec.fisheries.uvms.asset.client.model.AssetQuery;
+
 import java.util.List;
 
 public class ReportOneRequestDto {
 
 
-    String assetQuery;
+    AssetQuery assetQuery;
     List<String> sources;
 
     int page = 1;
@@ -15,11 +17,11 @@ public class ReportOneRequestDto {
     String startDate = "";
     String endDate = "";
 
-    public String getAssetQuery() {
+    public AssetQuery getAssetQuery() {
         return assetQuery;
     }
 
-    public void setAssetQuery(String assetQuery) {
+    public void setAssetQuery(AssetQuery assetQuery) {
         this.assetQuery = assetQuery;
     }
 
