@@ -20,6 +20,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,8 +54,9 @@ public class SSEResource {
             OutboundSseEvent sseEvent = createSseEvent(data, eventName);
 
             userSinks.stream().forEach(userSink -> {
-                if (userSink.getEventSink().isClosed()) {
+                if (userSink.getEventSink().isClosed() || Instant.now().isAfter(userSink.getExpieryTime())) {
                     LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
+                    userSink.getEventSink().close();
                     userSinks.remove(userSink);
 
                 }else {
@@ -128,11 +131,13 @@ public class SSEResource {
         private String user;
         private List<MovementSourceType> sources;
         private SseEventSink eventSink;
+        private Instant expieryTime;
 
         public UserSseEventSink(String user, SseEventSink sseEventSink, List<MovementSourceType> sources) {
             this.user = user;
             this.sources = sources;
             this.eventSink = sseEventSink;
+            expieryTime = Instant.now().plus(1, ChronoUnit.HOURS);
         }
 
         public String getUser() {
@@ -144,5 +149,9 @@ public class SSEResource {
         }
 
         public List<MovementSourceType> getSources() {return sources; }
+
+        public Instant getExpieryTime() {
+            return expieryTime;
+        }
     }
 }
