@@ -4,7 +4,7 @@ import eu.europa.ec.fisheries.uvms.asset.client.model.AssetQuery;
 
 import java.util.List;
 
-public class ReportOneRequestDto {
+public class TracksByAssetSearchRequestDto {
 
 
     AssetQuery assetQuery;

@@ -2,8 +2,7 @@ package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetQuery;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.streamcollector.dto.ReportOneRequestDto;
+import eu.europa.ec.fisheries.uvms.streamcollector.dto.TracksByAssetSearchRequestDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class ReportCollectorTest extends BuildStreamCollectorDeployment {
     @Test
     @OperateOnDeployment("collector")
     public void report1Test() throws InterruptedException {
-        ReportOneRequestDto request = new ReportOneRequestDto();
+        TracksByAssetSearchRequestDto request = new TracksByAssetSearchRequestDto();
         AssetQuery query = new AssetQuery();
         query.setCfr(Arrays.asList("Test"));
         request.setAssetQuery(query);

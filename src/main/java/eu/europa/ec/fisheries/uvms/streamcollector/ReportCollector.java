@@ -1,12 +1,11 @@
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
-import eu.europa.ec.fisheries.uvms.streamcollector.dto.ReportOneRequestDto;
+import eu.europa.ec.fisheries.uvms.streamcollector.dto.TracksByAssetSearchRequestDto;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -17,8 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Path("reports")
@@ -33,9 +30,9 @@ public class ReportCollector {
     MovementRestClient movementClient;
 
     @POST
-    @Path("report1")
+    @Path("tracksByAssetSearch")
     @RequiresFeature(UnionVMSFeature.viewVesselsAndMobileTerminals)
-    public Response getAssetList(ReportOneRequestDto request)  {
+    public Response getTracksByAssetSearch(TracksByAssetSearchRequestDto request)  {
         List<String> assetIds = assetClient.getAssetIdList(request.getAssetQuery(), request.getPage(), request.getSize(), request.isDynamic(), request.isIncludeInactivated());
 
         return Response.ok(movementClient.getMicroMovementsForConnectIdsBetweenDates(assetIds, DateUtils.stringToDate(request.getStartDate()), DateUtils.stringToDate(request.getEndDate()), request.getSources())).build();
