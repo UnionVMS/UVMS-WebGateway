@@ -22,7 +22,7 @@ public class ReportCollectorTest extends BuildStreamCollectorDeployment {
 
     @Test
     @OperateOnDeployment("collector")
-    public void report1Test() throws InterruptedException {
+    public void getTracksByAssetSearchTest() throws InterruptedException {
         TracksByAssetSearchRequestDto request = new TracksByAssetSearchRequestDto();
         AssetQuery query = new AssetQuery();
         query.setCfr(Arrays.asList("Test"));
@@ -33,7 +33,7 @@ public class ReportCollectorTest extends BuildStreamCollectorDeployment {
 
         Response response = getWebTarget()
                 .path("reports")
-                .path("report1")
+                .path("tracksByAssetSearch")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(request), Response.class);
