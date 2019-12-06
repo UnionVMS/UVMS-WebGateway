@@ -8,6 +8,8 @@ import org.eclipse.microprofile.metrics.annotation.Gauge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -22,7 +24,10 @@ import javax.ws.rs.sse.SseEventSink;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 @Path("sse")
@@ -35,6 +40,9 @@ public class SSEResource {
     private Sse sse;
     private OutboundSseEvent.Builder eventBuilder;
     private ConcurrentLinkedQueue<UserSseEventSink> userSinks = new ConcurrentLinkedQueue<>();
+
+    @Resource
+    ManagedExecutorService executor;
 
     @Context
     public void setSse(Sse sse) {
@@ -53,6 +61,7 @@ public class SSEResource {
             userSinks.stream().forEach(userSink -> {
                 if (userSink.getEventSink().isClosed()) {
                     LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
+                    userSink.getEventSink().close();
                     userSinks.remove(userSink);
 
                 }else {
@@ -60,12 +69,26 @@ public class SSEResource {
                         if ((Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) && (movementSource == null || userSink.getSources().stream().anyMatch(source -> source.equals(movementSource)))) {
                             LOG.debug("Broadcasting to {}", userSink.getUser());
                             try {
-                                userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
-                                    if (error != null) {
-                                        LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
-                                        userSinks.remove(userSink);
+                                Callable<Object> task = new Callable<Object>() {
+                                    public Boolean call() {
+                                        userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
+                                            if (error != null) {
+                                                LOG.error("Removing user " + userSink.getUser() + " from sse stream due to error: " + error.getMessage());
+                                                userSinks.remove(userSink);
+                                            }
+                                        });
+                                        return true;
                                     }
-                                });
+                                };
+                                Future<Object> future = executor.submit(task);
+                                try {
+                                    Object result = future.get(2, TimeUnit.SECONDS);
+                                } catch (Exception ex) {
+                                    future.cancel(true);
+                                    LOG.error("Removing user " + userSink.getUser() + " from sse stream due to being unable to send updates within one second");
+                                    userSink.getEventSink().close();
+                                    userSinks.remove(userSink);
+                                }
                             } catch (IllegalStateException e) {
                                 if (e.getMessage().contains("SseEventSink is closed")) {
                                     LOG.debug("Removing user " + userSink.getUser() + " from sse stream due to closed stream");
@@ -143,5 +166,6 @@ public class SSEResource {
         }
 
         public List<MovementSourceType> getSources() {return sources; }
+
     }
 }
