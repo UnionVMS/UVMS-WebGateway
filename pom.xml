@@ -25,7 +25,7 @@
         <usm4uvms.version>4.0.23</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
-        <jackson.version>2.10.1</jackson.version>
+        <jackson.version>2.10.2</jackson.version>
 
         <docker.dev.start.phase>test-compile</docker.dev.start.phase>
         <docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
