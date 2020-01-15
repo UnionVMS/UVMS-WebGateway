@@ -6,7 +6,7 @@
     <parent>
         <groupId>fish.focus.uvms.maven</groupId>
         <artifactId>uvms-pom</artifactId>
-        <version>2.2</version>
+        <version>2.6</version>
     </parent>
 
     <groupId>eu.europa.ec.fisheries.uvms.stream-collector</groupId>
@@ -21,15 +21,19 @@
         <application.logfile>/app/logs/${project.artifactId}/${project.artifactId}.log</application.logfile>
         <application.error.logfile>/app/logs/${project.artifactId}/${project.artifactId}-error.log</application.error.logfile>
 
-        <docker.dev.version>3.40.4.w18</docker.dev.version>
+        <docker.dev.version>3.40.18.w18</docker.dev.version>
         <usm4uvms.version>4.0.23</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
-        <jackson.version>2.10.0</jackson.version>
+        <jackson.version>2.10.1</jackson.version>
 
         <docker.dev.start.phase>test-compile</docker.dev.start.phase>
         <docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
         <docker.dev.stop.phase>verify</docker.dev.stop.phase>
+        <uvms.pom.version>2.6</uvms.pom.version>
+        <uvms.common.version>4.0.13</uvms.common.version>
+        <asset.version>6.4.1</asset.version>
+        <movement.version>5.3.2-UVMS</movement.version>
     </properties>
 
 
@@ -42,26 +46,26 @@
         <dependency>
             <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-logging-deps</artifactId>
-            <version>2.2</version>
+            <version>${uvms.pom.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-monitoring-deps</artifactId>
-            <version>2.2</version>
+            <version>${uvms.pom.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-test-deps</artifactId>
-            <version>2.2</version>
+            <version>${uvms.pom.version}</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-arquillian-deps</artifactId>
-            <version>2.2</version>
+            <version>${uvms.pom.version}</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>
@@ -69,17 +73,17 @@
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
             <artifactId>uvms-commons-date</artifactId>
-            <version>4.0.11</version>
+            <version>${uvms.common.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
             <artifactId>asset-client</artifactId>
-            <version>6.3.3</version>
+            <version>${asset.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-client</artifactId>
-            <version>5.2.37-UVMS</version>
+            <version>${movement.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -147,7 +151,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
+            <version>28.2-jre</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -189,7 +193,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.4</version>
+                <version>3.6.0</version>
                 <configuration>
                     <goalPrefix>plugin</goalPrefix>
                     <outputDirectory>target/dir</outputDirectory>
