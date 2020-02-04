@@ -22,7 +22,7 @@
         <application.error.logfile>/app/logs/${project.artifactId}/${project.artifactId}-error.log</application.error.logfile>
 
         <docker.dev.version>3.40.18.w18</docker.dev.version>
-        <usm4uvms.version>4.0.23</usm4uvms.version>
+        <usm4uvms.version>4.1.0</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
         <jackson.version>2.10.2</jackson.version>
