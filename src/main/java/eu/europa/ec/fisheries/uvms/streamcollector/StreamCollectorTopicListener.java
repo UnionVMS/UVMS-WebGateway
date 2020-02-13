@@ -13,18 +13,20 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import java.util.Arrays;
+import javax.json.bind.Jsonb;
+import java.util.Collections;
 import java.util.List;
 
 @MessageDriven(mappedName = "jms/topic/EventStream", activationConfig = {
@@ -37,9 +39,16 @@ public class StreamCollectorTopicListener implements MessageListener {
     private static final Logger LOG = LoggerFactory.getLogger(StreamCollectorTopicListener.class);
 
     @Inject
-    SSEResource sseResource;
+    private SSEResource sseResource;
 
-    private ObjectMapper om = new ObjectMapper();
+//    private ObjectMapper om = new ObjectMapper();
+
+    private Jsonb jsonb;
+
+    @PostConstruct
+    public void init() {
+        jsonb = new JsonBConfigurator().getContext(null);
+    }
 
     @Override
     public void onMessage(Message inMessage) {
@@ -47,7 +56,8 @@ public class StreamCollectorTopicListener implements MessageListener {
             TextMessage textMessage = (TextMessage) inMessage;
             String eventName = textMessage.getStringProperty(Constants.EVENT);
             String subscriberJson = textMessage.getStringProperty(Constants.SUBSCRIBERLIST);
-            List<String> subscriberList = (subscriberJson == null ? Arrays.asList(Constants.ALL) : om.readValue(subscriberJson, List.class));
+//            List<String> subscriberList = (subscriberJson == null ? Collections.singletonList(Constants.ALL) : om.readValue(subscriberJson, List.class));
+            List<String> subscriberList = (subscriberJson == null ? Collections.singletonList(Constants.ALL) : jsonb.fromJson(subscriberJson, List.class));
             String movementSourceString = textMessage.getStringProperty(Constants.MOVEMENT_SOURCE);
             MovementSourceType sourceType = (movementSourceString == null ? null : MovementSourceType.fromValue(movementSourceString));
             String data = textMessage.getText();

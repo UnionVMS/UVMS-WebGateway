@@ -1,8 +1,8 @@
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -12,13 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.jms.*;
+import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -27,28 +31,31 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
-public class StreamCollectorTest extends BuildStreamCollectorDeployment{
+public class StreamCollectorTest extends BuildStreamCollectorDeployment {
 
     private final static Logger LOG = LoggerFactory.getLogger(StreamCollectorTest.class);
-    private ObjectMapper om = new ObjectMapper();
+//    private ObjectMapper om = new ObjectMapper();
 
     private static String dataString = "";
     private static String eventString = "";
     private static String errorString = "";
 
+    private Jsonb jsonb;
+
     @Inject
     private JMSContext context;
 
     @Before
-    public void cleanup(){
+    public void cleanup() {
         dataString = "";
         eventString = "";
         errorString = "";
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     @Test
     @OperateOnDeployment("collector")
-    public void worldsBestAndMostUsefulArqTest(){
+    public void worldsBestAndMostUsefulArqTest() {
         assertTrue(true);
     }
 
@@ -116,7 +123,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         source.open();
         String testData = "test data";
         String testEvent = "test event";
-        sendDataAsJMSMessageToStream(testData, testEvent, Arrays.asList("user"), null);
+        sendDataAsJMSMessageToStream(testData, testEvent, Collections.singletonList("user"), null);
         Thread.sleep(100);
 
         assertTrue(eventString, eventString.contains(testEvent));
@@ -131,7 +138,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         source.open();
         String testData = "test data";
         String testEvent = "test event";
-        sendDataAsJMSMessageToStream(testData, testEvent, Arrays.asList("NOT user"), null);
+        sendDataAsJMSMessageToStream(testData, testEvent, Collections.singletonList("NOT user"), null);
         Thread.sleep(1000);
 
         assertFalse(eventString, eventString.contains(testEvent));
@@ -154,9 +161,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         source.close();
     }
 
-
-
-    private SseEventSource createSSEEventSource(){
+    private SseEventSource createSSEEventSource() {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://localhost:8080/test/rest/sse/subscribe");
         AuthorizationHeaderWebTarget jwtTarget = new AuthorizationHeaderWebTarget(target, getToken());
@@ -167,7 +172,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
         return source;
     }
 
-    private SseEventSource createSSEEventSourceWithMovementSourceParam(String movementSource){
+    private SseEventSource createSSEEventSourceWithMovementSourceParam(String movementSource) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://localhost:8080/test/rest/sse/subscribe").queryParam("sources", movementSource);
         AuthorizationHeaderWebTarget jwtTarget = new AuthorizationHeaderWebTarget(target, getToken());
@@ -181,7 +186,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment{
     private void sendDataAsJMSMessageToStream(String data, String eventName, List<String> subscriberList, String movementSource) throws JMSException, JsonProcessingException {
         TextMessage message = context.createTextMessage(data);
         message.setStringProperty(Constants.EVENT, eventName);
-        String subscriberJson = (subscriberList == null || subscriberList.isEmpty() ? null :  om.writeValueAsString(subscriberList));
+        String subscriberJson = (subscriberList == null || subscriberList.isEmpty() ? null : jsonb.toJson(subscriberList));
         message.setStringProperty(Constants.SUBSCRIBERLIST, subscriberJson);
         message.setStringProperty(Constants.MOVEMENT_SOURCE, movementSource);
 

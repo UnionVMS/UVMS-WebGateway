@@ -9,6 +9,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 @Path("/asset/rest/internal")
@@ -23,19 +24,18 @@ public class AssetModuleMock {
                                       @DefaultValue("100") @QueryParam("size") int size,
                                       @DefaultValue("true") @QueryParam("dynamic") boolean dynamic,
                                       @DefaultValue("false") @QueryParam("includeInactivated") boolean includeInactivated,
-                                      String query){
+                                      String query) {
+
         AssetListResponse assetListResponse = new AssetListResponse();
         assetListResponse.setCurrentPage(1);
         assetListResponse.setTotalNumberOfPages(10);
 
         AssetDTO asset = new AssetDTO();
         asset.setId(UUID.randomUUID());
-        assetListResponse.setAssetList(Arrays.asList(asset));
+        assetListResponse.setAssetList(Collections.singletonList(asset));
 
         return Response.ok(assetListResponse).build();
-
     }
-
 
     @POST
     @Path("queryIdOnly")
@@ -45,10 +45,7 @@ public class AssetModuleMock {
                                       @DefaultValue("false") @QueryParam("includeInactivated") boolean includeInactivated,
                                       String query){
 
-
-        return Response.ok(Arrays.asList(UUID.randomUUID())).build();
-
+        return Response.ok(Collections.singletonList(UUID.randomUUID())).build();
     }
-
 
 }

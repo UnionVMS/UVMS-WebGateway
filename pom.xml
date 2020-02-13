@@ -25,17 +25,15 @@
         <usm4uvms.version>4.1.0</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
-        <jackson.version>2.10.2</jackson.version>
-
+<!--        <jackson.version>2.10.2</jackson.version>-->
         <docker.dev.start.phase>test-compile</docker.dev.start.phase>
         <docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
         <docker.dev.stop.phase>verify</docker.dev.stop.phase>
         <uvms.pom.version>3.0</uvms.pom.version>
-        <uvms.common.version>4.0.13</uvms.common.version>
+        <uvms.common.version>4.1.0</uvms.common.version>
         <asset.version>6.5.1</asset.version>
         <movement.version>5.4.1-UVMS</movement.version>
     </properties>
-
 
     <dependencies>
         <dependency>
@@ -123,31 +121,31 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.datatype</groupId>-->
+<!--            <artifactId>jackson-datatype-jsr310</artifactId>-->
+<!--            <version>${jackson.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.module</groupId>-->
+<!--            <artifactId>jackson-module-jaxb-annotations</artifactId>-->
+<!--            <version>${jackson.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-core</artifactId>-->
+<!--            <version>${jackson.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-databind</artifactId>-->
+<!--            <version>${jackson.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.jaxrs</groupId>-->
+<!--            <artifactId>jackson-jaxrs-json-provider</artifactId>-->
+<!--            <version>${jackson.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
