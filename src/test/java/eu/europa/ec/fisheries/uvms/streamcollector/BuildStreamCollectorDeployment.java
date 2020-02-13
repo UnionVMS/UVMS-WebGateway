@@ -11,9 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -87,14 +84,8 @@ public abstract class BuildStreamCollectorDeployment {
     }
 
     protected WebTarget getWebTarget() {
-
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.registerModule(new JavaTimeModule());
-//        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Client client = ClientBuilder.newClient();
         client.register(JsonBConfigurator.class);
-//        client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
         return client.target("http://localhost:8080/test/rest");
     }
 

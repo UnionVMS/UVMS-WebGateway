@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import org.slf4j.Logger;
@@ -41,8 +40,6 @@ public class StreamCollectorTopicListener implements MessageListener {
     @Inject
     private SSEResource sseResource;
 
-//    private ObjectMapper om = new ObjectMapper();
-
     private Jsonb jsonb;
 
     @PostConstruct
@@ -56,7 +53,6 @@ public class StreamCollectorTopicListener implements MessageListener {
             TextMessage textMessage = (TextMessage) inMessage;
             String eventName = textMessage.getStringProperty(Constants.EVENT);
             String subscriberJson = textMessage.getStringProperty(Constants.SUBSCRIBERLIST);
-//            List<String> subscriberList = (subscriberJson == null ? Collections.singletonList(Constants.ALL) : om.readValue(subscriberJson, List.class));
             List<String> subscriberList = (subscriberJson == null ? Collections.singletonList(Constants.ALL) : jsonb.fromJson(subscriberJson, List.class));
             String movementSourceString = textMessage.getStringProperty(Constants.MOVEMENT_SOURCE);
             MovementSourceType sourceType = (movementSourceString == null ? null : MovementSourceType.fromValue(movementSourceString));

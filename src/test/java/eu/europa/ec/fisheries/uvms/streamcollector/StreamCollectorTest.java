@@ -34,7 +34,6 @@ import static org.junit.Assert.assertTrue;
 public class StreamCollectorTest extends BuildStreamCollectorDeployment {
 
     private final static Logger LOG = LoggerFactory.getLogger(StreamCollectorTest.class);
-//    private ObjectMapper om = new ObjectMapper();
 
     private static String dataString = "";
     private static String eventString = "";
