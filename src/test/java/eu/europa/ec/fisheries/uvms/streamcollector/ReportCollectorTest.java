@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -25,7 +26,7 @@ public class ReportCollectorTest extends BuildStreamCollectorDeployment {
     public void getTracksByAssetSearchTest() throws InterruptedException {
         TracksByAssetSearchRequestDto request = new TracksByAssetSearchRequestDto();
         AssetQuery query = new AssetQuery();
-        query.setCfr(Arrays.asList("Test"));
+        query.setCfr(Collections.singletonList("Test"));
         request.setAssetQuery(query);
 
        // System.out.println("Now");

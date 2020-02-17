@@ -24,18 +24,28 @@ import java.util.List;
 public class ReportCollector {
 
     @Inject
-    AssetClient assetClient;
+    private AssetClient assetClient;
 
     @Inject
-    MovementRestClient movementClient;
+    private MovementRestClient movementClient;
 
     @POST
     @Path("tracksByAssetSearch")
     @RequiresFeature(UnionVMSFeature.viewVesselsAndMobileTerminals)
     public Response getTracksByAssetSearch(TracksByAssetSearchRequestDto request)  {
-        List<String> assetIds = assetClient.getAssetIdList(request.getAssetQuery(), request.getPage(), request.getSize(), request.isDynamic(), request.isIncludeInactivated());
 
-        return Response.ok(movementClient.getMicroMovementsForConnectIdsBetweenDates(assetIds, DateUtils.stringToDate(request.getStartDate()), DateUtils.stringToDate(request.getEndDate()), request.getSources())).build();
+        List<String> assetIds = assetClient.getAssetIdList(request.getAssetQuery(),
+                request.getPage(),
+                request.getSize(),
+                request.isDynamic(),
+                request.isIncludeInactivated());
+
+        String response = movementClient.getMicroMovementsForConnectIdsBetweenDates(assetIds,
+                DateUtils.stringToDate(request.getStartDate()),
+                DateUtils.stringToDate(request.getEndDate()),
+                request.getSources());
+
+        return Response.ok(response).build();
     }
 
 

@@ -36,13 +36,12 @@ public class SSEResource {
 
     private final static Logger LOG = LoggerFactory.getLogger(SSEResource.class);
 
-
     private Sse sse;
     private OutboundSseEvent.Builder eventBuilder;
     private ConcurrentLinkedQueue<UserSseEventSink> userSinks = new ConcurrentLinkedQueue<>();
 
     @Resource
-    ManagedExecutorService executor;
+    private ManagedExecutorService executor;
 
     @Context
     public void setSse(Sse sse) {
@@ -58,7 +57,7 @@ public class SSEResource {
             }
             OutboundSseEvent sseEvent = createSseEvent(data, eventName);
 
-            userSinks.stream().forEach(userSink -> {
+            userSinks.forEach(userSink -> {
                 if (userSink.getEventSink().isClosed()) {
                     LOG.debug("Removing user " + userSink.getUser() + " from sse stream");
                     userSink.getEventSink().close();
@@ -66,19 +65,18 @@ public class SSEResource {
 
                 }else {
                     for (String subscription : subscriberList) {
-                        if ((Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) && (movementSource == null || userSink.getSources().stream().anyMatch(source -> source.equals(movementSource)))) {
+                        if ((Constants.ALL.equals(subscription) || userSink.getUser().equals(subscription)) &&
+                                (movementSource == null || userSink.getSources().stream().anyMatch(source -> source.equals(movementSource)))) {
                             LOG.debug("Broadcasting to {}", userSink.getUser());
                             try {
-                                Callable<Object> task = new Callable<Object>() {
-                                    public Boolean call() {
-                                        userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
-                                            if (error != null) {
-                                                LOG.error("Removing user " + userSink.getUser() + " from sse stream due to error: " + error.getMessage());
-                                                userSinks.remove(userSink);
-                                            }
-                                        });
-                                        return true;
-                                    }
+                                Callable<Object> task = () -> {
+                                    userSink.getEventSink().send(sseEvent).whenComplete((object, error) -> {
+                                        if (error != null) {
+                                            LOG.error("Removing user " + userSink.getUser() + " from sse stream due to error: " + error.getMessage());
+                                            userSinks.remove(userSink);
+                                        }
+                                    });
+                                    return true;
                                 };
                                 Future<Object> future = executor.submit(task);
                                 try {

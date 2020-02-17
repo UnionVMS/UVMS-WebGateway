@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +29,9 @@ public class RestActivator extends Application {
     private final Set<Class<?>> set = new HashSet<>();
 
     public RestActivator() {
-
         set.add(SSEResource.class);
         set.add(ReportCollector.class);
+        set.add(JsonBConfigurator.class);
     }
 
     @Override
