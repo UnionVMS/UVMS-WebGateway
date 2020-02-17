@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -182,7 +181,7 @@ public class StreamCollectorTest extends BuildStreamCollectorDeployment {
         return source;
     }
 
-    private void sendDataAsJMSMessageToStream(String data, String eventName, List<String> subscriberList, String movementSource) throws JMSException, JsonProcessingException {
+    private void sendDataAsJMSMessageToStream(String data, String eventName, List<String> subscriberList, String movementSource) throws JMSException {
         TextMessage message = context.createTextMessage(data);
         message.setStringProperty(Constants.EVENT, eventName);
         String subscriberJson = (subscriberList == null || subscriberList.isEmpty() ? null : jsonb.toJson(subscriberList));
