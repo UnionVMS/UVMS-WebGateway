@@ -1,27 +1,26 @@
 package eu.europa.ec.fisheries.uvms.streamcollector.dto;
 
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetQuery;
+import eu.europa.ec.fisheries.uvms.asset.client.model.search.SearchBranch;
 
 import java.util.List;
 
 public class TracksByAssetSearchRequestDto {
 
 
-    AssetQuery assetQuery;
+    SearchBranch assetQuery;
     List<String> sources;
 
     int page = 1;
     int size = 100000;
-    boolean dynamic = true;
     boolean includeInactivated = false;
     String startDate = "";
     String endDate = "";
 
-    public AssetQuery getAssetQuery() {
+    public SearchBranch getAssetQuery() {
         return assetQuery;
     }
 
-    public void setAssetQuery(AssetQuery assetQuery) {
+    public void setAssetQuery(SearchBranch assetQuery) {
         this.assetQuery = assetQuery;
     }
 
@@ -47,14 +46,6 @@ public class TracksByAssetSearchRequestDto {
 
     public void setSize(int size) {
         this.size = size;
-    }
-
-    public boolean isDynamic() {
-        return dynamic;
-    }
-
-    public void setDynamic(boolean dynamic) {
-        this.dynamic = dynamic;
     }
 
     public boolean isIncludeInactivated() {

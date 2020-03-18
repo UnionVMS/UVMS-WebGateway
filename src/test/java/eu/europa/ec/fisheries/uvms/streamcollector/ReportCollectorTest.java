@@ -1,7 +1,8 @@
 package eu.europa.ec.fisheries.uvms.streamcollector;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetQuery;
+import eu.europa.ec.fisheries.uvms.asset.client.model.search.SearchBranch;
+import eu.europa.ec.fisheries.uvms.asset.client.model.search.SearchFields;
 import eu.europa.ec.fisheries.uvms.streamcollector.dto.TracksByAssetSearchRequestDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -13,9 +14,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
@@ -25,8 +23,8 @@ public class ReportCollectorTest extends BuildStreamCollectorDeployment {
     @OperateOnDeployment("collector")
     public void getTracksByAssetSearchTest() throws InterruptedException {
         TracksByAssetSearchRequestDto request = new TracksByAssetSearchRequestDto();
-        AssetQuery query = new AssetQuery();
-        query.setCfr(Collections.singletonList("Test"));
+        SearchBranch query = new SearchBranch();
+        query.addNewSearchLeaf(SearchFields.CFR, "Test");
         request.setAssetQuery(query);
 
        // System.out.println("Now");

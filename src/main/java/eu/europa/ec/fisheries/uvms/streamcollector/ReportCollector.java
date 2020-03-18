@@ -37,7 +37,6 @@ public class ReportCollector {
         List<String> assetIds = assetClient.getAssetIdList(request.getAssetQuery(),
                 request.getPage(),
                 request.getSize(),
-                request.isDynamic(),
                 request.isIncludeInactivated());
 
         String response = movementClient.getMicroMovementsForConnectIdsBetweenDates(assetIds,
