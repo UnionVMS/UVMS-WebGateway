@@ -21,7 +21,7 @@
         <application.logfile>/app/logs/${project.artifactId}/${project.artifactId}.log</application.logfile>
         <application.error.logfile>/app/logs/${project.artifactId}/${project.artifactId}-error.log</application.error.logfile>
 
-        <docker.dev.version>3.40.18.w18</docker.dev.version>
+        <docker.dev.version>3.41.1.w18</docker.dev.version>
         <usm4uvms.version>4.1.0</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
