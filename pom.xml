@@ -31,7 +31,7 @@
         <uvms.pom.version>3.2</uvms.pom.version>
         <uvms.common.version>4.1.7</uvms.common.version>
         <asset.version>6.7.6</asset.version>
-        <movement.version>5.5.5-UVMS</movement.version>
+        <movement.version>5.5.6-UVMS</movement.version>
     </properties>
 
     <dependencies>
