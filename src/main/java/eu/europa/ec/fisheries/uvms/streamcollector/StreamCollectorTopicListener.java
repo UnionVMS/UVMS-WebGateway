@@ -28,10 +28,9 @@ import javax.json.bind.Jsonb;
 import java.util.Collections;
 import java.util.List;
 
-@MessageDriven(mappedName = "jms/topic/EventStream", activationConfig = {
-    @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"),
+@MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = Constants.TOPIC_NAME)
+    @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = Constants.TOPIC)
 })
 public class StreamCollectorTopicListener implements MessageListener {
 
