@@ -17,6 +17,7 @@ public class Constants {
     public static final String EVENT = "event";
     public static final String SUBSCRIBERLIST = "subscribers";
     public static final String TOPIC_NAME = "EventStream";
+    public static final String TOPIC = "jms/topic/EventStream";
     public static final String MOVEMENT_SOURCE = "movementSource";
 
 
