@@ -28,7 +28,7 @@ public class MovementModuleMock {
         MicroMovementExtended mme = new MicroMovementExtended();
         mme.setAsset("Movement Module Mock");
         MicroMovement mm = new MicroMovement();
-        mm.setGuid(UUID.randomUUID().toString());
+        mm.setId(UUID.randomUUID().toString());
         mm.setHeading(0.0);
         mm.setSpeed(0.0);
         mm.setSource(MovementSourceType.OTHER);
