@@ -9,7 +9,7 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.streamcollector;
+package eu.europa.ec.fisheries.uvms.webGateway;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,8 @@ public class RestActivator extends Application {
     public RestActivator() {
         set.add(SSEResource.class);
         set.add(ReportCollector.class);
-        set.add(JsonBConfiguratorAsset.class);
+        set.add(IncidentCollector.class);
+        set.add(JsonBConfiguratorWebGateway.class);
     }
 
     @Override
