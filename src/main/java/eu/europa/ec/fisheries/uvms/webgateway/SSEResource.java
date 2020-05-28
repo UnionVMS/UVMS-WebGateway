@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.webGateway;
+package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;

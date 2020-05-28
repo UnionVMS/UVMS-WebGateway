@@ -9,7 +9,7 @@
         <version>3.2</version>
     </parent>
 
-    <groupId>eu.europa.ec.fisheries.uvms.stream-collector</groupId>
+    <groupId>eu.europa.ec.fisheries.uvms.web-gateway</groupId>
     <artifactId>web-gateway</artifactId>
     <version>0.11.5-SNAPSHOT</version>
     <packaging>war</packaging>

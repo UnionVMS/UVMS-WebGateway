@@ -1,7 +1,7 @@
-package eu.europa.ec.fisheries.uvms.webGateway;
+package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
-import eu.europa.ec.fisheries.uvms.webGateway.dto.SearchBranchDeserializer;
+import eu.europa.ec.fisheries.uvms.webgateway.dto.SearchBranchDeserializer;
 
 public class JsonBConfiguratorWebGateway extends JsonBConfigurator {
 

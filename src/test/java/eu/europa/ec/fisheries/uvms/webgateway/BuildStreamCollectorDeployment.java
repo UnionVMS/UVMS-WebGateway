@@ -9,7 +9,7 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.webGateway;
+package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
@@ -49,7 +49,7 @@ public abstract class BuildStreamCollectorDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.webGateway");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.webgateway");
 
         testWar.delete("/WEB-INF/web.xml");
         testWar.addAsWebInfResource("mock-web.xml", "web.xml");
