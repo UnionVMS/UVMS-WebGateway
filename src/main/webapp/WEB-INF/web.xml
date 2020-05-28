@@ -4,7 +4,7 @@
          xmlns="http://java.sun.com/xml/ns/javaee">
     <context-param>
         <param-name>usmApplication</param-name>
-        <param-value>StreamCollector</param-value>
+        <param-value>WebGateway</param-value>
     </context-param>
 
 	<listener>
