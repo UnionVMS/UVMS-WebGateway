@@ -9,7 +9,7 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.streamcollector;
+package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
@@ -49,7 +49,7 @@ public abstract class BuildStreamCollectorDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.streamcollector");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.webgateway");
 
         testWar.delete("/WEB-INF/web.xml");
         testWar.addAsWebInfResource("mock-web.xml", "web.xml");
@@ -68,11 +68,7 @@ public abstract class BuildStreamCollectorDeployment {
 
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
                 .importRuntimeAndTestDependencies()
-                .resolve(/*"eu.europa.ec.fisheries.uvms.asset:asset-client",
-                        "eu.europa.ec.fisheries.uvms.asset:asset-model",
-                        "eu.europa.ec.fisheries.uvms.movement:movement-model",
-                        "eu.europa.ec.fisheries.uvms:usm4uvms",
-                        "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message"*/)
+                .resolve()
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 

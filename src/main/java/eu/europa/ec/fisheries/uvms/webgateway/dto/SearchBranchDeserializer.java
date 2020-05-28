@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.streamcollector.dto;
+package eu.europa.ec.fisheries.uvms.webgateway.dto;
 
 
 import eu.europa.ec.fisheries.uvms.asset.client.model.search.SearchBranch;

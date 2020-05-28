@@ -10,7 +10,7 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more d
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.europa.ec.fisheries.uvms.streamcollector;
+package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
@@ -32,9 +32,9 @@ import java.util.List;
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
     @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = Constants.TOPIC)
 })
-public class StreamCollectorTopicListener implements MessageListener {
+public class WebGatewayTopicListener implements MessageListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StreamCollectorTopicListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WebGatewayTopicListener.class);
 
     @Inject
     private SSEResource sseResource;

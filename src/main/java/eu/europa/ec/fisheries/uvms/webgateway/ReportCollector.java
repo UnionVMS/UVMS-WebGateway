@@ -1,11 +1,11 @@
-package eu.europa.ec.fisheries.uvms.streamcollector;
+package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
-import eu.europa.ec.fisheries.uvms.streamcollector.dto.TracksByAssetSearchRequestDto;
+import eu.europa.ec.fisheries.uvms.webgateway.dto.TracksByAssetSearchRequestDto;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

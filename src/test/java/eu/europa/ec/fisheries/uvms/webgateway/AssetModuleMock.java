@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.streamcollector;
+package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetListResponse;
