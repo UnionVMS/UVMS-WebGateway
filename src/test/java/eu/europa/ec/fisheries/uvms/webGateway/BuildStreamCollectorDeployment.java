@@ -49,7 +49,7 @@ public abstract class BuildStreamCollectorDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.streamcollector");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.webGateway");
 
         testWar.delete("/WEB-INF/web.xml");
         testWar.addAsWebInfResource("mock-web.xml", "web.xml");
@@ -68,11 +68,7 @@ public abstract class BuildStreamCollectorDeployment {
 
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
                 .importRuntimeAndTestDependencies()
-                .resolve(/*"eu.europa.ec.fisheries.uvms.asset:asset-client",
-                        "eu.europa.ec.fisheries.uvms.asset:asset-model",
-                        "eu.europa.ec.fisheries.uvms.movement:movement-model",
-                        "eu.europa.ec.fisheries.uvms:usm4uvms",
-                        "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message"*/)
+                .resolve()
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
