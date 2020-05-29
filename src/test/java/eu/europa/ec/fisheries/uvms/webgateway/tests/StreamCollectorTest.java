@@ -1,7 +1,10 @@
-package eu.europa.ec.fisheries.uvms.webgateway;
+package eu.europa.ec.fisheries.uvms.webgateway.tests;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.webgateway.AuthorizationHeaderWebTarget;
+import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
+import eu.europa.ec.fisheries.uvms.webgateway.Constants;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;

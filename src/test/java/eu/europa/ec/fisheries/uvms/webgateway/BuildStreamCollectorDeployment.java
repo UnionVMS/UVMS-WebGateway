@@ -14,6 +14,10 @@ package eu.europa.ec.fisheries.uvms.webgateway;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import eu.europa.ec.fisheries.uvms.webgateway.mock.AssetModuleMock;
+import eu.europa.ec.fisheries.uvms.webgateway.mock.IncidentModuleMock;
+import eu.europa.ec.fisheries.uvms.webgateway.mock.MovementModuleMock;
+import eu.europa.ec.fisheries.uvms.webgateway.mock.UnionVMSMock;
 import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -57,6 +61,7 @@ public abstract class BuildStreamCollectorDeployment {
         testWar.deleteClass(UnionVMSMock.class);
         testWar.deleteClass(MovementModuleMock.class);
         testWar.deleteClass(AssetModuleMock.class);
+        testWar.deleteClass(IncidentModuleMock.class);
         
         return testWar;
     }
@@ -75,6 +80,7 @@ public abstract class BuildStreamCollectorDeployment {
         testWar.addClass(UnionVMSMock.class);
         testWar.addClass(MovementModuleMock.class);
         testWar.addClass(AssetModuleMock.class);
+        testWar.addClass(IncidentModuleMock.class);
 
         return testWar;
     }
@@ -93,6 +99,9 @@ public abstract class BuildStreamCollectorDeployment {
                             UnionVMSFeature.viewManualMovements.getFeatureId(),
                             UnionVMSFeature.manageAlarmsHoldingTable.getFeatureId(),
                             UnionVMSFeature.viewVesselsAndMobileTerminals.getFeatureId(),
+                            UnionVMSFeature.manageAlarmsOpenTickets.getFeatureId(),
+                            UnionVMSFeature.viewAlarmsOpenTickets.getFeatureId(),
+                            UnionVMSFeature.manageVessels.getFeatureId(),
                             UnionVMSFeature.viewAlarmsHoldingTable.getFeatureId()));
         }
         return token;
