@@ -32,7 +32,7 @@
         <uvms.common.version>4.1.7</uvms.common.version>
         <asset.version>6.7.10</asset.version>
         <movement.version>5.5.9-UVMS</movement.version>
-        <incident.version>0.2.1</incident.version>
+        <incident.version>0.2.2</incident.version>
     </properties>
 
     <dependencies>
