@@ -1,8 +1,9 @@
-package eu.europa.ec.fisheries.uvms.webgateway;
+package eu.europa.ec.fisheries.uvms.webgateway.tests;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.search.SearchBranch;
 import eu.europa.ec.fisheries.uvms.asset.client.model.search.SearchFields;
+import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.TracksByAssetSearchRequestDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;

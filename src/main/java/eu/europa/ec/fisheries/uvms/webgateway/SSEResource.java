@@ -130,7 +130,7 @@ public class SSEResource {
         return sourceTypes;
     }
 
-    @Gauge(unit = MetricUnits.NONE, name = "StreamCollector_current_number_of_sse_stream_subscribers", absolute = true)
+    @Gauge(unit = MetricUnits.NONE, name = "WebCollector_current_number_of_sse_stream_subscribers", absolute = true)
     public int getCurrentNumberOfSubscribers(){
         return userSinks.size();
     }

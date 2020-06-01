@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.webgateway;
+package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
