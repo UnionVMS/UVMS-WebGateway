@@ -21,7 +21,7 @@
         <application.logfile>/app/logs/${project.artifactId}/${project.artifactId}.log</application.logfile>
         <application.error.logfile>/app/logs/${project.artifactId}/${project.artifactId}-error.log</application.error.logfile>
 
-        <docker.dev.version>3.43.8</docker.dev.version>
+        <docker.dev.version>3.43.9-INTERNAL-ONLY</docker.dev.version>
         <usm4uvms.version>4.1.0</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
@@ -30,9 +30,10 @@
         <docker.dev.stop.phase>verify</docker.dev.stop.phase>
         <uvms.pom.version>3.2</uvms.pom.version>
         <uvms.common.version>4.1.7</uvms.common.version>
-        <asset.version>6.7.10</asset.version>
+        <asset.version>6.7.12-SNAPSHOT</asset.version>
         <movement.version>5.5.9-UVMS</movement.version>
-        <incident.version>0.2.2</incident.version>
+        <incident.version>0.2.3-SNAPSHOT</incident.version>
+        <exchange.version>5.2.8-UVMS</exchange.version>
     </properties>
 
     <dependencies>
@@ -98,9 +99,19 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
+            <artifactId>asset-model</artifactId>
+            <version>${asset.version}</version>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.incident</groupId>
             <artifactId>incident-model</artifactId>
             <version>${incident.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
+            <artifactId>exchange-model</artifactId>
+            <version>${exchange.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
@@ -126,16 +137,16 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.microprofile.metrics</groupId>
             <artifactId>microprofile-metrics-api</artifactId>
             <version>2.3.2</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>29.0-jre</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

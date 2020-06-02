@@ -14,10 +14,7 @@ package eu.europa.ec.fisheries.uvms.webgateway;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
-import eu.europa.ec.fisheries.uvms.webgateway.mock.AssetModuleMock;
-import eu.europa.ec.fisheries.uvms.webgateway.mock.IncidentModuleMock;
-import eu.europa.ec.fisheries.uvms.webgateway.mock.MovementModuleMock;
-import eu.europa.ec.fisheries.uvms.webgateway.mock.UnionVMSMock;
+import eu.europa.ec.fisheries.uvms.webgateway.mock.*;
 import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -81,6 +78,7 @@ public abstract class BuildStreamCollectorDeployment {
         testWar.addClass(MovementModuleMock.class);
         testWar.addClass(AssetModuleMock.class);
         testWar.addClass(IncidentModuleMock.class);
+        testWar.addClass(ExchangeModuleMock.class);
 
         return testWar;
     }
@@ -102,6 +100,8 @@ public abstract class BuildStreamCollectorDeployment {
                             UnionVMSFeature.manageAlarmsOpenTickets.getFeatureId(),
                             UnionVMSFeature.viewAlarmsOpenTickets.getFeatureId(),
                             UnionVMSFeature.manageVessels.getFeatureId(),
+                            UnionVMSFeature.manageInternalRest.getFeatureId(),
+                            UnionVMSFeature.managePolls.getFeatureId(),
                             UnionVMSFeature.viewAlarmsHoldingTable.getFeatureId()));
         }
         return token;

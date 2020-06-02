@@ -29,6 +29,7 @@ public class IncidentModuleMock {
     public Response updateIncident(@PathParam("incidentId") long incidentId, StatusDto status) {
         IncidentDto response = new IncidentDto();
         response.setId(incidentId);
+        response.setStatus(status.getStatus().name());
         return Response.ok(response).build();
     }
 
@@ -39,7 +40,18 @@ public class IncidentModuleMock {
         List<IncidentLogDto> incidentLogs = new ArrayList<>();
         incidentLogs.add(createMockIncidentLog(incidentId, EventTypeEnum.POLL_CREATED));
         incidentLogs.add(createMockIncidentLog(incidentId, EventTypeEnum.NOTE_CREATED));
+        incidentLogs.add(createMockIncidentLog(incidentId, EventTypeEnum.MANUAL_POSITION));
         return Response.ok(incidentLogs).build();
+    }
+
+    @GET
+    @Path("{incidentId}")
+    @RequiresFeature(UnionVMSFeature.viewAlarmsOpenTickets)
+    public Response getByIncidentId(@PathParam("incidentId") Long incidentId) {
+        IncidentDto incident = new IncidentDto();
+        incident.setId(incidentId);
+        incident.setAssetId(UUID.randomUUID());
+        return Response.ok(incident).build();
     }
 
     private IncidentLogDto createMockIncidentLog(long incidentId, EventTypeEnum eventType){
