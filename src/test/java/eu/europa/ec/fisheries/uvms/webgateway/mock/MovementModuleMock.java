@@ -5,12 +5,13 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.MDC;
 
 import javax.ejb.Stateless;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
@@ -42,5 +43,24 @@ public class MovementModuleMock {
         mme.setMicroMove(mm);
 
         return Response.ok(mme).build();
+    }
+
+    @GET
+    @Path("/getMicroMovement/{movementId}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMicroMovementById(@PathParam("movementId") UUID movementId) {
+        MicroMovement micro = new MicroMovement();
+        micro.setId(movementId.toString());
+        micro.setHeading(0.5);
+        micro.setSource(MovementSourceType.MANUAL);
+        micro.setSpeed(55.5);
+        micro.setTimestamp(Instant.now());
+
+        MovementPoint point = new MovementPoint();
+        point.setLatitude(5.5);
+        point.setLongitude(55.5);
+        micro.setLocation(point);
+
+        return Response.ok(micro).build();
     }
 }

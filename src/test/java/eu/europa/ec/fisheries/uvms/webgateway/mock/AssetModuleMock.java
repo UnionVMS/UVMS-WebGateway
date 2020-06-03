@@ -1,8 +1,11 @@
 package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
+import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
+import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetListResponse;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
+import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.MDC;
@@ -73,4 +76,21 @@ public class AssetModuleMock {
         return Response.ok(note).header("MDC", MDC.get("requestId")).build();
     }
 
+    @POST
+    @Path("internal/createPollForAsset/{id}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response createPollForAsset(@PathParam("id") String assetId, @QueryParam("username") String username, @QueryParam("comment") String comment) {
+        CreatePollResultDto resultDto = new CreatePollResultDto();
+        resultDto.getSentPolls().add(UUID.randomUUID().toString());
+        return Response.ok(resultDto).build();
+    }
+
+    @POST
+    @Path("poll/")
+    @RequiresFeature(UnionVMSFeature.managePolls)
+    public Response createPoll(PollRequestType createPoll) {
+        CreatePollResultDto resultDto = new CreatePollResultDto();
+        resultDto.getSentPolls().add(UUID.randomUUID().toString());
+        return Response.ok(resultDto).header("MDC", MDC.get("requestId")).build();
+    }
 }
