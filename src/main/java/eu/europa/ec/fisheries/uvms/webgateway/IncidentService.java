@@ -85,15 +85,17 @@ public class IncidentService {
 
             response.getIncidentLogs().put(logDto.getId(), logDto);
 
-            if(EventTypeEnum.NOTE_CREATED.equals(logDto.getEventType())){
+            if(EventTypeEnum.NOTE_CREATED.equals(logDto.getEventType()) && logDto.getRelatedObjectId() != null){
                 Note note = getAssetNote(logDto.getRelatedObjectId(), auth);
                 response.getNotes().put(logDto.getRelatedObjectId().toString(), note);
 
-            }else if(EventTypeEnum.MANUAL_POSITION.equals(logDto.getEventType()) || EventTypeEnum.INCIDENT_CLOSED.equals(logDto.getEventType())){
+            }else if((EventTypeEnum.MANUAL_POSITION.equals(logDto.getEventType()) || EventTypeEnum.INCIDENT_CLOSED.equals(logDto.getEventType()))
+                    && logDto.getRelatedObjectId() != null){
                 MicroMovement microMovement = movementClient.getMicroMovementById(logDto.getRelatedObjectId());
                 response.getManualPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
 
-            }else if(EventTypeEnum.POLL_CREATED.equals(logDto.getEventType()) || EventTypeEnum.AUTO_POLL_CREATED.equals(logDto.getEventType())){
+            }else if((EventTypeEnum.POLL_CREATED.equals(logDto.getEventType()) || EventTypeEnum.AUTO_POLL_CREATED.equals(logDto.getEventType()))
+                    && logDto.getRelatedObjectId() != null){
                 ExchangeLogStatusType pollStatus = getPollStatus(logDto.getRelatedObjectId(), auth);
                 response.getPolls().put(logDto.getRelatedObjectId().toString(), pollStatus);
             }
