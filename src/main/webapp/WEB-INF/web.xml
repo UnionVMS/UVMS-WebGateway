@@ -36,7 +36,7 @@
 
 	<filter>
 		<filter-name>RequestFilter</filter-name>
-		<filter-class>eu.europa.ec.fisheries.uvms.webgateway.RequestFilter</filter-class>
+		<filter-class>eu.europa.ec.fisheries.uvms.webgateway.filter.RequestFilter</filter-class>
 		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
