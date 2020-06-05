@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.webgateway;
 
+import eu.europa.ec.fisheries.uvms.webgateway.filter.WebGatewayRestExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class RestActivator extends Application {
         set.add(ReportCollector.class);
         set.add(IncidentCollector.class);
         set.add(JsonBConfiguratorWebGateway.class);
+        set.add(WebGatewayRestExceptionMapper.class);
     }
 
     @Override
