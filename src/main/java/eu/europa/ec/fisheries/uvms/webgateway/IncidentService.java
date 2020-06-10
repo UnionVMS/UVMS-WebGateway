@@ -13,14 +13,12 @@ import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
-import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.NoteAndIncidentDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.PollAndIncidentDto;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -92,7 +90,7 @@ public class IncidentService {
             }else if((EventTypeEnum.MANUAL_POSITION.equals(logDto.getEventType()) || EventTypeEnum.INCIDENT_CLOSED.equals(logDto.getEventType()))
                     && logDto.getRelatedObjectId() != null){
                 MicroMovement microMovement = movementClient.getMicroMovementById(logDto.getRelatedObjectId());
-                response.getManualPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
+                response.getPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
 
             }else if((EventTypeEnum.POLL_CREATED.equals(logDto.getEventType()) || EventTypeEnum.AUTO_POLL_CREATED.equals(logDto.getEventType()))
                     && logDto.getRelatedObjectId() != null){
