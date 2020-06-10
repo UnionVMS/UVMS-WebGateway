@@ -16,7 +16,7 @@ public class ExtendedIncidentLogDto {
 
     private Map<String, ExchangeLogStatusType> polls = new HashMap<>();
 
-    private Map<String, MicroMovement> manualPositions = new HashMap<>();
+    private Map<String, MicroMovement> positions = new HashMap<>();
 
     public ExtendedIncidentLogDto() {
         incidentLogs = new HashMap<>();
@@ -50,11 +50,11 @@ public class ExtendedIncidentLogDto {
         this.polls = polls;
     }
 
-    public Map<String, MicroMovement> getManualPositions() {
-        return manualPositions;
+    public Map<String, MicroMovement> getPositions() {
+        return positions;
     }
 
-    public void setManualPositions(Map<String, MicroMovement> manualPositions) {
-        this.manualPositions = manualPositions;
+    public void setPositions(Map<String, MicroMovement> positions) {
+        this.positions = positions;
     }
 }

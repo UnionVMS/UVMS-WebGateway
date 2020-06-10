@@ -149,7 +149,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         Optional<IncidentLogDto> movementIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.MANUAL_POSITION)).findAny();
         assertTrue(movementIncidentLog.isPresent());
 
-        MicroMovement outputMovement = output.getManualPositions().get(movementIncidentLog.get().getRelatedObjectId().toString());
+        MicroMovement outputMovement = output.getPositions().get(movementIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputMovement != null);
 
     }
