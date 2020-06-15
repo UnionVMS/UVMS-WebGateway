@@ -9,6 +9,7 @@ import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
@@ -83,19 +84,17 @@ public class IncidentService {
 
             response.getIncidentLogs().put(logDto.getId(), logDto);
 
-            if(EventTypeEnum.NOTE_CREATED.equals(logDto.getEventType()) && logDto.getRelatedObjectId() != null){
+            if(RelatedObjectType.NOTE.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {
                 Note note = getAssetNote(logDto.getRelatedObjectId(), auth);
-                response.getNotes().put(logDto.getRelatedObjectId().toString(), note);
+                response.getRelatedObjects().getNotes().put(logDto.getRelatedObjectId().toString(), note);
 
-            }else if((EventTypeEnum.MANUAL_POSITION.equals(logDto.getEventType()) || EventTypeEnum.INCIDENT_CLOSED.equals(logDto.getEventType()))
-                    && logDto.getRelatedObjectId() != null){
+            }else if(RelatedObjectType.MOVEMENT.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {
                 MicroMovement microMovement = movementClient.getMicroMovementById(logDto.getRelatedObjectId());
-                response.getPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
+                response.getRelatedObjects().getPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
 
-            }else if((EventTypeEnum.POLL_CREATED.equals(logDto.getEventType()) || EventTypeEnum.AUTO_POLL_CREATED.equals(logDto.getEventType()))
-                    && logDto.getRelatedObjectId() != null){
+            }else if(RelatedObjectType.POLL.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {
                 ExchangeLogStatusType pollStatus = getPollStatus(logDto.getRelatedObjectId(), auth);
-                response.getPolls().put(logDto.getRelatedObjectId().toString(), pollStatus);
+                response.getRelatedObjects().getPolls().put(logDto.getRelatedObjectId().toString(), pollStatus);
             }
 
         }

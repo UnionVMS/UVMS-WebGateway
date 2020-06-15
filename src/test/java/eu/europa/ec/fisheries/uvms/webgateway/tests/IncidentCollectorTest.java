@@ -123,7 +123,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         Optional<IncidentLogDto> noteIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.NOTE_CREATED)).findAny();
         assertTrue(noteIncidentLog.isPresent());
 
-        Note outputNote = output.getNotes().get(noteIncidentLog.get().getRelatedObjectId().toString());
+        Note outputNote = output.getRelatedObjects().getNotes().get(noteIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputNote != null);
 
     }
@@ -149,7 +149,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         Optional<IncidentLogDto> movementIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.MANUAL_POSITION)).findAny();
         assertTrue(movementIncidentLog.isPresent());
 
-        MicroMovement outputMovement = output.getPositions().get(movementIncidentLog.get().getRelatedObjectId().toString());
+        MicroMovement outputMovement = output.getRelatedObjects().getPositions().get(movementIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputMovement != null);
 
     }
@@ -176,7 +176,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         Optional<IncidentLogDto> pollIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.POLL_CREATED)).findAny();
         assertTrue(pollIncidentLog.isPresent());
 
-        ExchangeLogStatusType outputPollStatus = output.getPolls().get(pollIncidentLog.get().getRelatedObjectId().toString());
+        ExchangeLogStatusType outputPollStatus = output.getRelatedObjects().getPolls().get(pollIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputPollStatus != null);
 
     }
