@@ -1,9 +1,13 @@
 package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
+import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
+import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
+import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -60,10 +64,25 @@ public class IncidentModuleMock {
         log.setCreateDate(Instant.now());
         log.setRelatedObjectId(UUID.randomUUID());
         log.setEventType(eventType);
+        log.setRelatedObjectType(getRelatedObjectType(eventType));
         log.setMessage("All hail, incident module mocker");
         log.setId((long)(Math.random() * 10000d));
 
         return log;
+    }
+
+    private RelatedObjectType getRelatedObjectType(EventTypeEnum eventType){
+        if(EventTypeEnum.NOTE_CREATED.equals(eventType)){
+            return RelatedObjectType.NOTE;
+
+        }else if(EventTypeEnum.MANUAL_POSITION.equals(eventType) || EventTypeEnum.INCIDENT_CLOSED.equals(eventType)) {
+            return RelatedObjectType.MOVEMENT;
+
+        }else if(EventTypeEnum.POLL_CREATED.equals(eventType) || EventTypeEnum.AUTO_POLL_CREATED.equals(eventType)) {
+            return RelatedObjectType.POLL;
+        }
+
+        return RelatedObjectType.NONE;
     }
 
 }
