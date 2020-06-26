@@ -1,16 +1,17 @@
 package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
-import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.NoteAndIncidentDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.PollAndIncidentDto;
-import org.slf4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,14 +21,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.UUID;
 
 @ApplicationScoped
 @Path("incidents")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class IncidentCollector {
+
+    private final static Logger LOG = LoggerFactory.getLogger(IncidentCollector.class);
 
     @Inject
     IncidentService incidentService;
@@ -71,6 +72,22 @@ public class IncidentCollector {
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
         PollAndIncidentDto response = incidentService.addPollToIncident(incidentId, pollRequest, auth);
         return Response.ok(response).build();
+    }
+
+    @POST
+    @Path("updateStatusForIncident/{incidentId}")
+    @RequiresFeature(UnionVMSFeature.managePolls)
+    public Response updateStatusForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, StatusDto status) {
+        try {
+            String user = request.getRemoteUser();
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            IncidentDto response = incidentService.updateStatusForIncident(incidentId, status, auth, user);
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error while updating incident status: {}", e.getMessage(), e);
+            throw e;
+
+        }
     }
 
 }

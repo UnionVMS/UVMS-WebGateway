@@ -4,7 +4,9 @@ import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
@@ -178,6 +180,40 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
 
         ExchangeLogStatusType outputPollStatus = output.getRelatedObjects().getPolls().get(pollIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputPollStatus != null);
+
+    }
+
+    @Test
+    @OperateOnDeployment("collector")
+    public void setIncidentStatusToLongTermParked()  {
+
+        UUID assetId = UUID.randomUUID();
+        StatusDto status = new StatusDto();
+        status.setStatus(StatusEnum.LONG_TERM_PARKED);
+        status.setEventType(EventTypeEnum.INCIDENT_STATUS);
+        status.setRelatedObjectId(null);
+
+        Response response = getWebTarget()
+                .path("incidents")
+                .path("updateStatusForIncident")
+                .path("555")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .post(Entity.json(status), Response.class);
+
+        assertEquals(200, response.getStatus());
+        IncidentDto output = response.readEntity(IncidentDto.class);
+        assertEquals(status.getStatus().name(), output.getStatus());
+        assertNotNull(output.getAssetId());
+
+        assertEquals("true", System.getProperty("MR_MODULE_REACHED"));
+        System.clearProperty("MR_MODULE_REACHED");
+
+        assertEquals("true", System.getProperty("GET_ASSET_REACHED"));
+        System.clearProperty("GET_ASSET_REACHED");
+
+        assertEquals("true", System.getProperty("UPDATE_ASSET_REACHED"));
+        System.clearProperty("UPDATE_ASSET_REACHED");
 
     }
 
