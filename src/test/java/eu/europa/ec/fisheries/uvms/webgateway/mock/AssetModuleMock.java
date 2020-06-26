@@ -2,12 +2,14 @@ package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
+import eu.europa.ec.fisheries.uvms.asset.client.model.AssetBO;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetListResponse;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.MDC;
 
 import javax.ejb.Stateless;
@@ -92,5 +94,23 @@ public class AssetModuleMock {
         CreatePollResultDto resultDto = new CreatePollResultDto();
         resultDto.getSentPolls().add(UUID.randomUUID().toString());
         return Response.ok(resultDto).header("MDC", MDC.get("requestId")).build();
+    }
+
+    @GET
+    @Path("internal/asset/guid/{id}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getAssetById(@PathParam("id") String id) {
+        System.setProperty("GET_ASSET_REACHED", "true");
+        AssetDTO asset = new AssetDTO();
+        asset.setId(UUID.fromString(id));
+        return Response.ok(asset).build();
+    }
+
+    @POST
+    @Path("internal/asset")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response upsertAsset(AssetBO assetBo) {
+        System.setProperty("UPDATE_ASSET_REACHED", "true");
+        return Response.ok(assetBo).build();
     }
 }

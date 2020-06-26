@@ -3,6 +3,9 @@ package eu.europa.ec.fisheries.uvms.webgateway;
 import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
+import eu.europa.ec.fisheries.uvms.asset.client.model.AssetBO;
+import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
+import eu.europa.ec.fisheries.uvms.asset.client.model.AssetIdentifier;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
@@ -29,7 +32,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
+import javax.ws.rs.core.Response;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +46,8 @@ public class IncidentService {
 
     private WebTarget exchangeWebTarget;
 
+    private WebTarget mrWebTarget;
+
     @Resource(name = "java:global/asset_endpoint")
     private String assetEndpoint;
 
@@ -50,6 +56,9 @@ public class IncidentService {
 
     @Resource(name = "java:global/exchange_endpoint")
     private String exchangeEndpoint;
+
+    @Resource(name = "java:global/movement-rules_endpoint")
+    private String mrEndpoint;
 
     @Inject
     private AssetClient assetClient;
@@ -67,22 +76,22 @@ public class IncidentService {
         assetWebTarget = client.target(assetEndpoint);
         incidentWebTarget = client.target(incidentEndpoint);
         exchangeWebTarget = client.target(exchangeEndpoint);
+        mrWebTarget = client.target(mrEndpoint);
     }
 
 
     public ExtendedIncidentLogDto incidentLogForIncident(String incidentId, String auth){
-        List<IncidentLogDto> dto = incidentWebTarget
+        Map<Long, IncidentLogDto> dto = incidentWebTarget
                 .path("incident")
                 .path("incidentLogForIncident")
                 .path(incidentId)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .get(new GenericType<List<IncidentLogDto>>() {});
+                .get(new GenericType<Map<Long, IncidentLogDto>>() {});
 
         ExtendedIncidentLogDto response = new ExtendedIncidentLogDto(dto.size());
-        for (IncidentLogDto logDto : dto) {
-
-            response.getIncidentLogs().put(logDto.getId(), logDto);
+        response.setIncidentLogs(dto);
+        for (IncidentLogDto logDto : dto.values()) {
 
             if(RelatedObjectType.NOTE.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {
                 Note note = getAssetNote(logDto.getRelatedObjectId(), auth);
@@ -222,6 +231,43 @@ public class IncidentService {
             return createdPollResponse.getSentPolls().get(0);
         }
 
+    }
+
+    public IncidentDto updateStatusForIncident(String incidentId, StatusDto status, String auth, String user) {
+        IncidentDto incident = updateIncidentStatus(incidentId, status, auth);
+        if(incident.getId() == null){
+            return null;
+        }
+
+        if(status.getStatus().equals(StatusEnum.LONG_TERM_PARKED)){
+            removeAssetFromPreviousReport(incident.getAssetId().toString(), auth);
+            setLongTermParkedOnAsset(incident.getAssetId().toString(), user);
+        }
+
+        return incident;
+    }
+
+    private void removeAssetFromPreviousReport(String assetId, String auth) {
+        Response response = mrWebTarget
+                .path("previousReports")
+                .path("byAsset")
+                .path(assetId)
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, auth)
+                .delete(Response.class);
+        String responseString = response.readEntity(String.class);
+        if(response.getStatus() != 200 || responseString.contains("code")){
+            throw new RuntimeException(responseString);
+        }
+    }
+
+    private void setLongTermParkedOnAsset(String assetId, String user){
+        AssetDTO assetById = assetClient.getAssetById(AssetIdentifier.GUID, assetId);
+        assetById.setLongTermParked(true);
+        assetById.setUpdatedBy(user);
+        AssetBO bo = new AssetBO();
+        bo.setAsset(assetById);
+        assetClient.upsertAsset(bo);
     }
 
 }

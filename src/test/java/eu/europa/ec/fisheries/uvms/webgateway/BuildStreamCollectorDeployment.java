@@ -79,6 +79,7 @@ public abstract class BuildStreamCollectorDeployment {
         testWar.addClass(AssetModuleMock.class);
         testWar.addClass(IncidentModuleMock.class);
         testWar.addClass(ExchangeModuleMock.class);
+        testWar.addClass(MrModuleMock.class);
 
         return testWar;
     }
@@ -102,6 +103,7 @@ public abstract class BuildStreamCollectorDeployment {
                             UnionVMSFeature.manageVessels.getFeatureId(),
                             UnionVMSFeature.manageInternalRest.getFeatureId(),
                             UnionVMSFeature.managePolls.getFeatureId(),
+                            UnionVMSFeature.manageGlobalAlarmsRules.getFeatureId(),
                             UnionVMSFeature.viewAlarmsHoldingTable.getFeatureId()));
         }
         return token;

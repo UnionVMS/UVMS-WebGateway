@@ -1,24 +1,20 @@
 package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
-import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
-import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 @Path("/incident/rest/incident")
@@ -33,6 +29,7 @@ public class IncidentModuleMock {
     public Response updateIncident(@PathParam("incidentId") long incidentId, StatusDto status) {
         IncidentDto response = new IncidentDto();
         response.setId(incidentId);
+        response.setAssetId(UUID.randomUUID());
         response.setStatus(status.getStatus().name());
         return Response.ok(response).build();
     }
@@ -41,10 +38,13 @@ public class IncidentModuleMock {
     @Path("incidentLogForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.viewAlarmsOpenTickets)
     public Response getIncidentLogForIncident(@PathParam("incidentId") long incidentId) {
-        List<IncidentLogDto> incidentLogs = new ArrayList<>();
-        incidentLogs.add(createMockIncidentLog(incidentId, EventTypeEnum.POLL_CREATED));
-        incidentLogs.add(createMockIncidentLog(incidentId, EventTypeEnum.NOTE_CREATED));
-        incidentLogs.add(createMockIncidentLog(incidentId, EventTypeEnum.MANUAL_POSITION));
+        Map<Long, IncidentLogDto> incidentLogs = new TreeMap<>();
+        IncidentLogDto pollLog = createMockIncidentLog(incidentId, EventTypeEnum.POLL_CREATED);
+        IncidentLogDto noteLog = createMockIncidentLog(incidentId, EventTypeEnum.NOTE_CREATED);
+        IncidentLogDto manualLog = createMockIncidentLog(incidentId, EventTypeEnum.MANUAL_POSITION);
+        incidentLogs.put(pollLog.getId(), pollLog);
+        incidentLogs.put(noteLog.getId(), noteLog);
+        incidentLogs.put(manualLog.getId(), manualLog);
         return Response.ok(incidentLogs).build();
     }
 
