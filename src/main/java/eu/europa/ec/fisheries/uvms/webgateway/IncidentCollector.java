@@ -38,11 +38,15 @@ public class IncidentCollector {
     @Path("incidentLogForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.viewVesselsAndMobileTerminals)
     public Response incidentLogForIncident(@Context HttpServletRequest request,@PathParam("incidentId") String incidentId)  {
-        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+        try{
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            ExtendedIncidentLogDto response = incidentService.incidentLogForIncident(incidentId, auth);
 
-        ExtendedIncidentLogDto response = incidentService.incidentLogForIncident(incidentId, auth);
-
-        return Response.ok(response).build();
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error getting incident log for incident: " ,e.getMessage(), e);
+            throw e;
+        }
     }
 
 
@@ -50,28 +54,43 @@ public class IncidentCollector {
     @Path("addNoteToIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.viewVesselsAndMobileTerminals)
     public Response addNoteToIncident(@Context HttpServletRequest request,@PathParam("incidentId") String incidentId, Note note)  {
-        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        NoteAndIncidentDto response = incidentService.addNoteToIncident(incidentId, auth, note);
+        try {
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            NoteAndIncidentDto response = incidentService.addNoteToIncident(incidentId, auth, note);
 
-        return Response.ok(response).build();
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error adding note to incident: " , e.getMessage(), e);
+            throw e;
+        }
     }
 
     @POST
     @Path("createSimplePollForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.managePolls)
     public Response createPollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, CommentDto pollDto) {
-        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        PollAndIncidentDto response = incidentService.addSimplePollToIncident(incidentId, auth, request.getRemoteUser(), pollDto.getComment());
-        return Response.ok(response).build();
+        try{
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            PollAndIncidentDto response = incidentService.addSimplePollToIncident(incidentId, auth, request.getRemoteUser(), pollDto.getComment());
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error creating simple poll for incident: ", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @POST
     @Path("createPollForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.managePolls)
     public Response createPollForAsset(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, PollRequestType pollRequest) {
-        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        PollAndIncidentDto response = incidentService.addPollToIncident(incidentId, pollRequest, auth);
-        return Response.ok(response).build();
+        try{
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            PollAndIncidentDto response = incidentService.addPollToIncident(incidentId, pollRequest, auth);
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error creating poll for incident: ", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @POST
