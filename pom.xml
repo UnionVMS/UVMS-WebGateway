@@ -33,7 +33,7 @@
         <asset.version>6.7.15</asset.version>
         <movement.version>5.5.12-UVMS</movement.version>
         <incident.version>0.3.2</incident.version>
-        <exchange.version>5.2.13-UVMS</exchange.version>
+        <exchange.version>5.2.14-UVMS-SNAPSHOT</exchange.version>
     </properties>
 
     <dependencies>
@@ -110,7 +110,7 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
-            <artifactId>exchange-model</artifactId>
+            <artifactId>exchange-client</artifactId>
             <version>${exchange.version}</version>
         </dependency>
         <dependency>

@@ -8,6 +8,7 @@ import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetIdentifier;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.exchange.client.ExchangeRestClient;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
@@ -79,6 +80,8 @@ public class IncidentService {
         mrWebTarget = client.target(mrEndpoint);
     }
 
+    @Inject
+    ExchangeRestClient exchangeRestClient;
 
     public ExtendedIncidentLogDto incidentLogForIncident(String incidentId, String auth){
         Map<Long, IncidentLogDto> dto = incidentWebTarget
@@ -102,7 +105,7 @@ public class IncidentService {
                 response.getRelatedObjects().getPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
 
             }else if(RelatedObjectType.POLL.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {
-                ExchangeLogStatusType pollStatus = getPollStatus(logDto.getRelatedObjectId(), auth);
+                ExchangeLogStatusType pollStatus = exchangeRestClient.getPollStatus(logDto.getRelatedObjectId().toString());
                 response.getRelatedObjects().getPolls().put(logDto.getRelatedObjectId().toString(), pollStatus);
             }
 
@@ -122,19 +125,6 @@ public class IncidentService {
 
         return note;
     }
-
-    private ExchangeLogStatusType getPollStatus(UUID pollId, String auth){
-        ExchangeLogStatusType pollStatus = exchangeWebTarget
-                .path("exchange")
-                .path("poll")
-                .path(pollId.toString())
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, auth)
-                .get(ExchangeLogStatusType.class);
-
-        return pollStatus;
-    }
-
 
     public NoteAndIncidentDto addNoteToIncident(String incidentId, String auth, Note note){
         Note createdNote = addNoteToAsset(note, auth);

@@ -24,7 +24,7 @@ import java.util.UUID;
 public class ExchangeModuleMock {
 
     @GET
-    @Path(value = "exchange/poll/{typeRefGuid}")
+    @Path(value = "unsecured/api/poll/{typeRefGuid}")
     public Response getPollStatus(@PathParam("typeRefGuid") String typeRefGuid) {
         if (typeRefGuid == null) {
             throw new IllegalArgumentException("Invalid id");
