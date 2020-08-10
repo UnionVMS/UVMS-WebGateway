@@ -21,19 +21,21 @@ import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.NoteAndIncidentDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.PollAndIncidentDto;
+import eu.europa.ec.fisheries.uvms.webgateway.filter.AppError;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +50,8 @@ public class IncidentService {
     private WebTarget exchangeWebTarget;
 
     private WebTarget mrWebTarget;
+
+    private Jsonb json;
 
     @Resource(name = "java:global/asset_endpoint")
     private String assetEndpoint;
@@ -78,19 +82,15 @@ public class IncidentService {
         incidentWebTarget = client.target(incidentEndpoint);
         exchangeWebTarget = client.target(exchangeEndpoint);
         mrWebTarget = client.target(mrEndpoint);
+
+        json = new JsonBConfiguratorWebGateway().getContext(null);
     }
 
     @Inject
     ExchangeRestClient exchangeRestClient;
 
     public ExtendedIncidentLogDto incidentLogForIncident(String incidentId, String auth){
-        Map<Long, IncidentLogDto> dto = incidentWebTarget
-                .path("incident")
-                .path("incidentLogForIncident")
-                .path(incidentId)
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, auth)
-                .get(new GenericType<Map<Long, IncidentLogDto>>() {});
+        Map<Long, IncidentLogDto> dto = getIncidentLogForIncident(incidentId, auth);
 
         ExtendedIncidentLogDto response = new ExtendedIncidentLogDto(dto.size());
         response.setIncidentLogs(dto);
@@ -114,16 +114,36 @@ public class IncidentService {
         return response;
     }
 
+    private Map<Long, IncidentLogDto> getIncidentLogForIncident(String incidentId, String auth){
+        String jsonResponse = incidentWebTarget
+                .path("incident")
+                .path("incidentLogForIncident")
+                .path(incidentId)
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, auth)
+                .get(String.class);
+
+        if(jsonResponse.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonResponse, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+        return json.fromJson(jsonResponse, new HashMap<Long, IncidentLogDto>(){}.getClass().getGenericSuperclass());
+    }
+
     private Note getAssetNote(UUID noteId, String auth){
-        Note note = assetWebTarget
+        String jsonNote = assetWebTarget
                 .path("asset")
                 .path("note")
                 .path(noteId.toString())
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .get(Note.class);
+                .get(String.class);
 
-        return note;
+        if(jsonNote.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonNote, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+        return json.fromJson(jsonNote, Note.class);
     }
 
     public NoteAndIncidentDto addNoteToIncident(String incidentId, String auth, Note note){
@@ -140,26 +160,35 @@ public class IncidentService {
     }
 
     private Note addNoteToAsset(Note note, String auth){
-        Note createdNote = assetWebTarget
+        String jsonCreatedNote = assetWebTarget
                 .path("asset")
                 .path("notes")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .post(Entity.json(note), Note.class);
+                .post(Entity.json(note), String.class);
 
-        return createdNote;
+        if(jsonCreatedNote.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonCreatedNote, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+
+        return json.fromJson(jsonCreatedNote, Note.class);
     }
 
     private IncidentDto updateIncidentStatus(String incidentId, StatusDto statusDto, String auth){
-        IncidentDto dto = incidentWebTarget
+        String jsonDto = incidentWebTarget
                 .path("incident")
                 .path("updateStatusForIncident")
                 .path(incidentId)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .post(Entity.json(statusDto), IncidentDto.class);
+                .post(Entity.json(statusDto), String.class);
 
-        return dto;
+        if(jsonDto.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonDto, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+        return json.fromJson(jsonDto, IncidentDto.class);
     }
 
     public PollAndIncidentDto addSimplePollToIncident(String incidentId, String auth, String username, String comment){
@@ -182,14 +211,18 @@ public class IncidentService {
     }
 
     private IncidentDto getIncident(String incidentId, String auth){
-        IncidentDto dto = incidentWebTarget
+        String jsonDto = incidentWebTarget
                 .path("incident")
                 .path(incidentId)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .get(IncidentDto.class);
+                .get(String.class);
 
-        return dto;
+        if(jsonDto.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonDto, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+        return json.fromJson(jsonDto, IncidentDto.class);
     }
 
     public PollAndIncidentDto addPollToIncident(String incidentId, PollRequestType pollRequest, String auth){
@@ -209,11 +242,17 @@ public class IncidentService {
     }
 
     private String createPollForAsset(PollRequestType pollRequest, String auth){
-        CreatePollResultDto createdPollResponse = assetWebTarget
+        String jsonCreatedPollResponse = assetWebTarget
                 .path("poll")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .post(Entity.json(pollRequest), CreatePollResultDto.class);
+                .post(Entity.json(pollRequest), String.class);
+
+        if(jsonCreatedPollResponse.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonCreatedPollResponse, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+        CreatePollResultDto createdPollResponse = json.fromJson(jsonCreatedPollResponse, CreatePollResultDto.class);
 
         if(createdPollResponse.isUnsentPoll()){
             return createdPollResponse.getUnsentPolls().get(0);
@@ -246,8 +285,9 @@ public class IncidentService {
                 .header(HttpHeaders.AUTHORIZATION, auth)
                 .delete(Response.class);
         String responseString = response.readEntity(String.class);
-        if(response.getStatus() != 200 || responseString.contains("code")){
-            throw new RuntimeException(responseString);
+        if(response.getStatus() != 200 || responseString.contains("\"code\":")){
+            String errorDeskription = json.fromJson(responseString, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
         }
     }
 
