@@ -13,6 +13,7 @@ import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
@@ -149,7 +150,7 @@ public class IncidentService {
     public NoteAndIncidentDto addNoteToIncident(String incidentId, String auth, Note note){
         Note createdNote = addNoteToAsset(note, auth);
 
-        StatusDto incidentStatus = new StatusDto(StatusEnum.NOTE_ADDED, EventTypeEnum.NOTE_CREATED, createdNote.getId());
+        StatusDto incidentStatus = new StatusDto(null, EventTypeEnum.NOTE_CREATED, createdNote.getId());
         IncidentDto incidentDto = updateIncidentStatus(incidentId, incidentStatus, auth);
 
         NoteAndIncidentDto response = new NoteAndIncidentDto();
@@ -175,6 +176,20 @@ public class IncidentService {
         return json.fromJson(jsonCreatedNote, Note.class);
     }
 
+    private IncidentDto createIncident(IncidentDto incident, String auth){
+        String jsonDto = incidentWebTarget
+                .path("incident")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, auth)
+                .post(Entity.json(incident), String.class);
+
+        if(jsonDto.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonDto, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+        return json.fromJson(jsonDto, IncidentDto.class);
+    }
+
     private IncidentDto updateIncidentStatus(String incidentId, StatusDto statusDto, String auth){
         String jsonDto = incidentWebTarget
                 .path("incident")
@@ -191,6 +206,7 @@ public class IncidentService {
         return json.fromJson(jsonDto, IncidentDto.class);
     }
 
+
     public PollAndIncidentDto addSimplePollToIncident(String incidentId, String auth, String username, String comment){
 
         IncidentDto incident = getIncident(incidentId, auth);
@@ -201,7 +217,6 @@ public class IncidentService {
         StatusDto status = new StatusDto();
         status.setRelatedObjectId(UUID.fromString(pollId));
         status.setEventType(EventTypeEnum.POLL_CREATED);
-        status.setStatus(StatusEnum.POLL_INITIATED);
 
         IncidentDto updatedIncident = updateIncidentStatus(incidentId, status, auth);
 
@@ -232,7 +247,6 @@ public class IncidentService {
         StatusDto status = new StatusDto();
         status.setRelatedObjectId(UUID.fromString(pollId));
         status.setEventType(EventTypeEnum.POLL_CREATED);
-        status.setStatus(StatusEnum.POLL_INITIATED);
 
         IncidentDto updatedIncident = updateIncidentStatus(incidentId, status, auth);
 
@@ -268,12 +282,26 @@ public class IncidentService {
             return null;
         }
 
-        if(status.getStatus().equals(StatusEnum.LONG_TERM_PARKED)){
+        if(status.getStatus().equals(StatusEnum.PARKED)){
             removeAssetFromPreviousReport(incident.getAssetId().toString(), auth);
-            setLongTermParkedOnAsset(incident.getAssetId().toString(), user);
+            setParkedOnAsset(incident.getAssetId().toString(), user);
         }
 
         return incident;
+    }
+
+    public IncidentDto createIncident(IncidentDto incident, String auth, String user) {
+        IncidentDto updatedIncident = createIncident(incident, auth);
+        if(updatedIncident.getId() == null){
+            return null;
+        }
+
+        if(!updatedIncident.getType().equals(IncidentType.MANUAL_MODE) && !updatedIncident.getType().equals(IncidentType.ASSET_NOT_SENDING)){
+            removeAssetFromPreviousReport(updatedIncident.getAssetId().toString(), auth);
+            setParkedOnAsset(updatedIncident.getAssetId().toString(), user);
+        }
+
+        return updatedIncident;
     }
 
     private void removeAssetFromPreviousReport(String assetId, String auth) {
@@ -291,9 +319,9 @@ public class IncidentService {
         }
     }
 
-    private void setLongTermParkedOnAsset(String assetId, String user){
+    private void setParkedOnAsset(String assetId, String user){
         AssetDTO assetById = assetClient.getAssetById(AssetIdentifier.GUID, assetId);
-        assetById.setLongTermParked(true);
+        assetById.setParked(true);
         assetById.setUpdatedBy(user);
         AssetBO bo = new AssetBO();
         bo.setAsset(assetById);

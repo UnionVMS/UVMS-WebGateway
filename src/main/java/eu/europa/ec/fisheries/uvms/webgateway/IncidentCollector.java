@@ -68,7 +68,7 @@ public class IncidentCollector {
     @POST
     @Path("createSimplePollForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.managePolls)
-    public Response createPollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, CommentDto pollDto) {
+    public Response createSimplePollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, CommentDto pollDto) {
         try{
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
             PollAndIncidentDto response = incidentService.addSimplePollToIncident(incidentId, auth, request.getRemoteUser(), pollDto.getComment());
@@ -82,7 +82,7 @@ public class IncidentCollector {
     @POST
     @Path("createPollForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.managePolls)
-    public Response createPollForAsset(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, PollRequestType pollRequest) {
+    public Response createPollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, PollRequestType pollRequest) {
         try{
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
             PollAndIncidentDto response = incidentService.addPollToIncident(incidentId, pollRequest, auth);
@@ -101,6 +101,22 @@ public class IncidentCollector {
             String user = request.getRemoteUser();
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
             IncidentDto response = incidentService.updateStatusForIncident(incidentId, status, auth, user);
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error while updating incident status: {}", e.getMessage(), e);
+            throw e;
+
+        }
+    }
+
+    @POST
+    @Path("createIncident/")
+    @RequiresFeature(UnionVMSFeature.managePolls)
+    public Response createIncident(@Context HttpServletRequest request, IncidentDto incident) {
+        try {
+            String user = request.getRemoteUser();
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            IncidentDto response = incidentService.createIncident(incident, auth, user);
             return Response.ok(response).build();
         }catch (Exception e){
             LOG.error("Error while updating incident status: {}", e.getMessage(), e);
