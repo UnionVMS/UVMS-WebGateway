@@ -24,13 +24,20 @@ import java.util.UUID;
 public class IncidentModuleMock {
 
     @POST
+    @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
+    public Response createIncident(IncidentDto incidentDto) {
+        incidentDto.setId((long) (Math.random() * 10000d));
+        return Response.ok(incidentDto).build();
+    }
+
+    @POST
     @Path("updateStatusForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
     public Response updateIncident(@PathParam("incidentId") long incidentId, StatusDto status) {
         IncidentDto response = new IncidentDto();
         response.setId(incidentId);
         response.setAssetId(UUID.randomUUID());
-        response.setStatus(status.getStatus().name());
+        response.setStatus(status.getStatus() != null ? status.getStatus().name() : null);
         return Response.ok(response).build();
     }
 
