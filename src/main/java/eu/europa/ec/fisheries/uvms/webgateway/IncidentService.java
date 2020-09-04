@@ -9,19 +9,16 @@ import eu.europa.ec.fisheries.uvms.asset.client.model.AssetIdentifier;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.exchange.client.ExchangeRestClient;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.EventCreationDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
-import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
-import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
-import eu.europa.ec.fisheries.uvms.webgateway.dto.NoteAndIncidentDto;
-import eu.europa.ec.fisheries.uvms.webgateway.dto.PollAndIncidentDto;
 import eu.europa.ec.fisheries.uvms.webgateway.filter.AppError;
 
 import javax.annotation.PostConstruct;
@@ -147,17 +144,13 @@ public class IncidentService {
         return json.fromJson(jsonNote, Note.class);
     }
 
-    public NoteAndIncidentDto addNoteToIncident(String incidentId, String auth, Note note){
+    public Note addNoteToIncident(String incidentId, String auth, Note note){
         Note createdNote = addNoteToAsset(note, auth);
 
-        StatusDto incidentStatus = new StatusDto(null, EventTypeEnum.NOTE_CREATED, createdNote.getId());
-        IncidentDto incidentDto = updateIncidentStatus(incidentId, incidentStatus, auth);
+        EventCreationDto eventCreation = new EventCreationDto(EventTypeEnum.NOTE_CREATED, createdNote.getId());
+        addEventToIncident(incidentId, eventCreation, auth);
 
-        NoteAndIncidentDto response = new NoteAndIncidentDto();
-        response.setNote(createdNote);
-        response.setIncident(incidentDto);
-
-        return response;
+        return createdNote;
     }
 
     private Note addNoteToAsset(Note note, String auth){
@@ -190,39 +183,37 @@ public class IncidentService {
         return json.fromJson(jsonDto, IncidentDto.class);
     }
 
-    private IncidentDto updateIncidentStatus(String incidentId, StatusDto statusDto, String auth){
-        String jsonDto = incidentWebTarget
+    public void addEventToIncident(String incidentId, EventCreationDto eventCreation, String auth){
+        Response response = incidentWebTarget
                 .path("incident")
-                .path("updateStatusForIncident")
+                .path("addEventToIncident")
                 .path(incidentId)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .post(Entity.json(statusDto), String.class);
+                .post(Entity.json(eventCreation), Response.class);
+        String jsonDto = response.readEntity(String.class);
 
         if(jsonDto.contains("\"code\":")){
-            String errorDeskription = json.fromJson(jsonDto, AppError.class).description;
-            throw new RuntimeException(errorDeskription);
+            String errorDescription = json.fromJson(jsonDto, AppError.class).description;
+            throw new RuntimeException(errorDescription);
         }
-        return json.fromJson(jsonDto, IncidentDto.class);
     }
 
 
-    public PollAndIncidentDto addSimplePollToIncident(String incidentId, String auth, String username, String comment){
+    public String addSimplePollToIncident(String incidentId, String auth, String username, String comment){
 
         IncidentDto incident = getIncident(incidentId, auth);
         UUID assetId = incident.getAssetId();
 
         String pollId = assetClient.createPollForAsset(assetId, username, comment);
 
-        StatusDto status = new StatusDto();
-        status.setRelatedObjectId(UUID.fromString(pollId));
-        status.setEventType(EventTypeEnum.POLL_CREATED);
+        EventCreationDto eventCreation = new EventCreationDto();
+        eventCreation.setRelatedObjectId(UUID.fromString(pollId));
+        eventCreation.setEventType(EventTypeEnum.POLL_CREATED);
 
-        IncidentDto updatedIncident = updateIncidentStatus(incidentId, status, auth);
+        addEventToIncident(incidentId, eventCreation, auth);
 
-        PollAndIncidentDto response = new PollAndIncidentDto(pollId, updatedIncident);
-
-        return response;
+        return pollId;
     }
 
     private IncidentDto getIncident(String incidentId, String auth){
@@ -240,19 +231,17 @@ public class IncidentService {
         return json.fromJson(jsonDto, IncidentDto.class);
     }
 
-    public PollAndIncidentDto addPollToIncident(String incidentId, PollRequestType pollRequest, String auth){
+    public String addPollToIncident(String incidentId, PollRequestType pollRequest, String auth){
 
         String pollId = createPollForAsset(pollRequest, auth);
 
-        StatusDto status = new StatusDto();
-        status.setRelatedObjectId(UUID.fromString(pollId));
-        status.setEventType(EventTypeEnum.POLL_CREATED);
+        EventCreationDto eventCreation = new EventCreationDto();
+        eventCreation.setRelatedObjectId(UUID.fromString(pollId));
+        eventCreation.setEventType(EventTypeEnum.POLL_CREATED);
 
-        IncidentDto updatedIncident = updateIncidentStatus(incidentId, status, auth);
+        addEventToIncident(incidentId, eventCreation, auth);
 
-        PollAndIncidentDto response = new PollAndIncidentDto(pollId, updatedIncident);
-
-        return response;
+        return pollId;
     }
 
     private String createPollForAsset(PollRequestType pollRequest, String auth){
@@ -274,20 +263,6 @@ public class IncidentService {
             return createdPollResponse.getSentPolls().get(0);
         }
 
-    }
-
-    public IncidentDto updateStatusForIncident(String incidentId, StatusDto status, String auth, String user) {
-        IncidentDto incident = updateIncidentStatus(incidentId, status, auth);
-        if(incident.getId() == null){
-            return null;
-        }
-
-        if(status.getStatus().equals(StatusEnum.PARKED)){
-            removeAssetFromPreviousReport(incident.getAssetId().toString(), auth);
-            setParkedOnAsset(incident.getAssetId().toString(), user);
-        }
-
-        return incident;
     }
 
     public IncidentDto createIncident(IncidentDto incident, String auth, String user) {

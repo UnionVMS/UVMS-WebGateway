@@ -1,8 +1,8 @@
 package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
+import eu.europa.ec.fisheries.uvms.incident.model.dto.EventCreationDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
-import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
@@ -31,14 +31,11 @@ public class IncidentModuleMock {
     }
 
     @POST
-    @Path("updateStatusForIncident/{incidentId}")
+    @Path("addEventToIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
-    public Response updateIncident(@PathParam("incidentId") long incidentId, StatusDto status) {
-        IncidentDto response = new IncidentDto();
-        response.setId(incidentId);
-        response.setAssetId(UUID.randomUUID());
-        response.setStatus(status.getStatus() != null ? status.getStatus().name() : null);
-        return Response.ok(response).build();
+    public Response addEventForToIncident(@PathParam("incidentId") long incidentId, EventCreationDto status) {
+        System.setProperty("INCIDENT_MODULE_MOCK_ON_ID", "" + incidentId);
+        return Response.ok().build();
     }
 
     @GET

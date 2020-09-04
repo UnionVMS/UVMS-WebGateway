@@ -3,13 +3,10 @@ package eu.europa.ec.fisheries.uvms.webgateway;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
-import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
-import eu.europa.ec.fisheries.uvms.webgateway.dto.NoteAndIncidentDto;
-import eu.europa.ec.fisheries.uvms.webgateway.dto.PollAndIncidentDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +53,7 @@ public class IncidentCollector {
     public Response addNoteToIncident(@Context HttpServletRequest request,@PathParam("incidentId") String incidentId, Note note)  {
         try {
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-            NoteAndIncidentDto response = incidentService.addNoteToIncident(incidentId, auth, note);
+            Note response = incidentService.addNoteToIncident(incidentId, auth, note);
 
             return Response.ok(response).build();
         }catch (Exception e){
@@ -71,7 +68,7 @@ public class IncidentCollector {
     public Response createSimplePollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, CommentDto pollDto) {
         try{
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-            PollAndIncidentDto response = incidentService.addSimplePollToIncident(incidentId, auth, request.getRemoteUser(), pollDto.getComment());
+            String response = incidentService.addSimplePollToIncident(incidentId, auth, request.getRemoteUser(), pollDto.getComment());
             return Response.ok(response).build();
         }catch (Exception e){
             LOG.error("Error creating simple poll for incident: ", e.getMessage(), e);
@@ -85,27 +82,11 @@ public class IncidentCollector {
     public Response createPollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, PollRequestType pollRequest) {
         try{
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-            PollAndIncidentDto response = incidentService.addPollToIncident(incidentId, pollRequest, auth);
+            String response = incidentService.addPollToIncident(incidentId, pollRequest, auth);
             return Response.ok(response).build();
         }catch (Exception e){
             LOG.error("Error creating poll for incident: ", e.getMessage(), e);
             throw e;
-        }
-    }
-
-    @POST
-    @Path("updateStatusForIncident/{incidentId}")
-    @RequiresFeature(UnionVMSFeature.managePolls)
-    public Response updateStatusForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, StatusDto status) {
-        try {
-            String user = request.getRemoteUser();
-            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-            IncidentDto response = incidentService.updateStatusForIncident(incidentId, status, auth, user);
-            return Response.ok(response).build();
-        }catch (Exception e){
-            LOG.error("Error while updating incident status: {}", e.getMessage(), e);
-            throw e;
-
         }
     }
 
