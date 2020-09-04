@@ -6,17 +6,12 @@ import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
-import eu.europa.ec.fisheries.uvms.incident.model.dto.StatusDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
-import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
-import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
-import eu.europa.ec.fisheries.uvms.webgateway.dto.NoteAndIncidentDto;
-import eu.europa.ec.fisheries.uvms.webgateway.dto.PollAndIncidentDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -36,6 +31,8 @@ import static org.junit.Assert.*;
 @RunWith(Arquillian.class)
 public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
 
+    private String INCIDENT_MODULE_MOCK_ON_ID = "INCIDENT_MODULE_MOCK_ON_ID";
+
     @Test
     @OperateOnDeployment("collector")
     public void addNoteToIncidentTest()  {
@@ -44,21 +41,24 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         note.setCreatedBy("web gateway tester");
         note.setNote("The actual note");
 
+        System.clearProperty(INCIDENT_MODULE_MOCK_ON_ID);
+        String incidentId = "" + ((long) (Math.random() * 10000d));
+
         Response response = getWebTarget()
                 .path("incidents")
                 .path("addNoteToIncident")
-                .path("555")
+                .path(incidentId)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(note), Response.class);
 
         assertEquals(200, response.getStatus());
-        NoteAndIncidentDto output = response.readEntity(NoteAndIncidentDto.class);
+        Note output = response.readEntity(Note.class);
 
-        assertEquals(555l, output.getIncident().getId().longValue());
-        assertEquals(note.getCreatedBy(), output.getNote().getCreatedBy());
-        assertNotNull(output.getNote().getId());
-        assertEquals(note.getAssetId(), output.getNote().getAssetId());
+        assertEquals(incidentId, System.getProperty(INCIDENT_MODULE_MOCK_ON_ID));
+        assertEquals(note.getCreatedBy(), output.getCreatedBy());
+        assertNotNull(output.getId());
+        assertEquals(note.getAssetId(), output.getAssetId());
 
     }
 
@@ -68,19 +68,23 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         CommentDto comment = new CommentDto();
         comment.setComment("add simple poll to asset test");
 
+        System.clearProperty(INCIDENT_MODULE_MOCK_ON_ID);
+        String incidentId = "" + ((long) (Math.random() * 10000d));
+
         Response response = getWebTarget()
                 .path("incidents")
                 .path("createSimplePollForIncident")
-                .path("555")
+                .path(incidentId)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(comment), Response.class);
 
         assertEquals(200, response.getStatus());
-        PollAndIncidentDto output = response.readEntity(PollAndIncidentDto.class);
+        String output = response.readEntity(String.class);
+        assertNotNull(output);
+        assertNotNull(UUID.fromString(output));
 
-        assertNotNull(output.getPollId());
-        assertNotNull(output.getIncident().getId());
+        assertEquals(incidentId, System.getProperty(INCIDENT_MODULE_MOCK_ON_ID));
     }
 
     @Test
@@ -91,19 +95,24 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         pollRequest.setPollType(PollType.MANUAL_POLL);
         pollRequest.setUserName("web-gateway tester");
 
+        System.clearProperty(INCIDENT_MODULE_MOCK_ON_ID);
+        String incidentId = "" + ((long) (Math.random() * 10000d));
+
         Response response = getWebTarget()
                 .path("incidents")
                 .path("createPollForIncident")
-                .path("555")
+                .path(incidentId)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(pollRequest), Response.class);
 
         assertEquals(200, response.getStatus());
-        PollAndIncidentDto output = response.readEntity(PollAndIncidentDto.class);
+        String output = response.readEntity(String.class);
+        assertNotNull(output);
+        assertNotNull(UUID.fromString(output));
 
-        assertNotNull(output.getPollId());
-        assertNotNull(output.getIncident().getId());
+        assertNotNull(output);
+        assertEquals(incidentId, System.getProperty(INCIDENT_MODULE_MOCK_ON_ID));
     }
 
     @Test
@@ -182,40 +191,6 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
 
         ExchangeLogStatusType outputPollStatus = output.getRelatedObjects().getPolls().get(pollIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputPollStatus != null);
-
-    }
-
-    @Test
-    @OperateOnDeployment("collector")
-    public void setIncidentStatusToLongTermParked()  {
-
-        UUID assetId = UUID.randomUUID();
-        StatusDto status = new StatusDto();
-        status.setStatus(StatusEnum.PARKED);
-        status.setEventType(EventTypeEnum.INCIDENT_STATUS);
-        status.setRelatedObjectId(null);
-
-        Response response = getWebTarget()
-                .path("incidents")
-                .path("updateStatusForIncident")
-                .path("555")
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(status), Response.class);
-
-        assertEquals(200, response.getStatus());
-        IncidentDto output = response.readEntity(IncidentDto.class);
-        assertEquals(status.getStatus().name(), output.getStatus());
-        assertNotNull(output.getAssetId());
-
-        assertEquals("true", System.getProperty("MR_MODULE_REACHED"));
-        System.clearProperty("MR_MODULE_REACHED");
-
-        assertEquals("true", System.getProperty("GET_ASSET_REACHED"));
-        System.clearProperty("GET_ASSET_REACHED");
-
-        assertEquals("true", System.getProperty("UPDATE_ASSET_REACHED"));
-        System.clearProperty("UPDATE_ASSET_REACHED");
 
     }
 
