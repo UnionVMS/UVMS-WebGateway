@@ -15,6 +15,7 @@ import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
@@ -33,13 +34,13 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Stateless
 public class IncidentService {
+
+    private static List<IncidentType> INCIDENT_PARKED_GROUP = Arrays.asList(IncidentType.OWNER_TRANSFER ,IncidentType.SEASONAL_FISHING ,IncidentType.PARKED);
 
     private WebTarget assetWebTarget;
 
@@ -183,6 +184,46 @@ public class IncidentService {
         return json.fromJson(jsonDto, IncidentDto.class);
     }
 
+    public IncidentDto updateIncident(IncidentDto incident, String auth, String user){
+        IncidentDto originalIncident = getIncident("" + incident.getId(), auth);
+        IncidentDto updatedIncident = updateIncident(incident, auth);
+
+        if(updatedIncident.getStatus().equals(StatusEnum.RESOLVED)){
+            if(isIncidentTypeInParkedGroup(incident)){
+                setParkedOnAsset(updatedIncident.getAssetId().toString(), user, false);
+            }
+        }else{
+            if(isIncidentTypeInParkedGroup(incident)){
+                if(!originalIncident.getType().equals(updatedIncident.getType())) {
+                    setParkedOnAsset(updatedIncident.getAssetId().toString(), user, true);
+                    removeAssetFromPreviousReport(updatedIncident.getAssetId().toString(), auth);
+                }
+            }
+        }
+
+        return updatedIncident;
+    }
+
+
+    private IncidentDto updateIncident(IncidentDto incident, String auth){
+        String jsonDto = incidentWebTarget
+                .path("incident")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, auth)
+                .put(Entity.json(incident), String.class);
+
+        if(jsonDto.contains("\"code\":")){
+            String errorDeskription = json.fromJson(jsonDto, AppError.class).description;
+            throw new RuntimeException(errorDeskription);
+        }
+        return json.fromJson(jsonDto, IncidentDto.class);
+    }
+
+
+    private boolean isIncidentTypeInParkedGroup(IncidentDto incident){
+        return INCIDENT_PARKED_GROUP.contains(incident.getType());
+    }
+
     public void addEventToIncident(String incidentId, EventCreationDto eventCreation, String auth){
         Response response = incidentWebTarget
                 .path("incident")
@@ -273,7 +314,7 @@ public class IncidentService {
 
         if(!updatedIncident.getType().equals(IncidentType.MANUAL_MODE) && !updatedIncident.getType().equals(IncidentType.ASSET_NOT_SENDING)){
             removeAssetFromPreviousReport(updatedIncident.getAssetId().toString(), auth);
-            setParkedOnAsset(updatedIncident.getAssetId().toString(), user);
+            setParkedOnAsset(updatedIncident.getAssetId().toString(), user, true);
         }
 
         return updatedIncident;
@@ -294,9 +335,9 @@ public class IncidentService {
         }
     }
 
-    private void setParkedOnAsset(String assetId, String user){
+    private void setParkedOnAsset(String assetId, String user, boolean parked){
         AssetDTO assetById = assetClient.getAssetById(AssetIdentifier.GUID, assetId);
-        assetById.setParked(true);
+        assetById.setParked(parked);
         assetById.setUpdatedBy(user);
         AssetBO bo = new AssetBO();
         bo.setAsset(assetById);
