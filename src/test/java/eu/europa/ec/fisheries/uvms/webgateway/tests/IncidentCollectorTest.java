@@ -8,12 +8,14 @@ import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,6 +34,13 @@ import static org.junit.Assert.*;
 public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
 
     private String INCIDENT_MODULE_MOCK_ON_ID = "INCIDENT_MODULE_MOCK_ON_ID";
+
+    @Before
+    public void clearModuleMockReached(){
+        System.clearProperty("MR_MODULE_REACHED");
+        System.clearProperty("GET_ASSET_REACHED");
+        System.clearProperty("UPDATE_ASSET_REACHED");
+    }
 
     @Test
     @OperateOnDeployment("collector")
@@ -214,23 +223,14 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         assertNotNull(output.getId());
 
         assertEquals("true", System.getProperty("MR_MODULE_REACHED"));
-        System.clearProperty("MR_MODULE_REACHED");
-
         assertEquals("true", System.getProperty("GET_ASSET_REACHED"));
-        System.clearProperty("GET_ASSET_REACHED");
-
         assertEquals("true", System.getProperty("UPDATE_ASSET_REACHED"));
-        System.clearProperty("UPDATE_ASSET_REACHED");
 
     }
 
     @Test
     @OperateOnDeployment("collector")
     public void createManualModeIncident()  {
-        System.clearProperty("MR_MODULE_REACHED");
-        System.clearProperty("GET_ASSET_REACHED");
-        System.clearProperty("UPDATE_ASSET_REACHED");
-
         IncidentDto incident = createBasicIncidentDto();
         incident.setType(IncidentType.MANUAL_MODE);
         incident.setExpiryDate(Instant.now().plus(10, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MILLIS));
@@ -250,14 +250,61 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
         assertNull(System.getProperty("MR_MODULE_REACHED"));
         assertNull(System.getProperty("GET_ASSET_REACHED"));
         assertNull(System.getProperty("UPDATE_ASSET_REACHED"));
+    }
 
+    @Test
+    @OperateOnDeployment("collector")
+    public void updateParkedIncidentToResolved()  {
+        IncidentDto incident = createBasicIncidentDto();
+        incident.setId(555l);
+        incident.setType(IncidentType.PARKED);
+        incident.setStatus(StatusEnum.RESOLVED);
+
+        Response response = getWebTarget()
+                .path("incidents")
+                .path("updateIncident")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .put(Entity.json(incident), Response.class);
+
+        assertEquals(200, response.getStatus());
+        IncidentDto output = response.readEntity(IncidentDto.class);
+        assertNotNull(output.getAssetId());
+        assertNotNull(output.getId());
+
+        assertEquals("true", System.getProperty("GET_ASSET_REACHED"));
+        assertEquals("true", System.getProperty("UPDATE_ASSET_REACHED"));
+    }
+
+    @Test
+    @OperateOnDeployment("collector")
+    public void updateManualIncidentToAttempted()  {
+        IncidentDto incident = createBasicIncidentDto();
+        incident.setType(IncidentType.MANUAL_MODE);
+        incident.setId(555l);
+        incident.setStatus(StatusEnum.ATTEMPTED_CONTACT);
+
+        Response response = getWebTarget()
+                .path("incidents")
+                .path("updateIncident")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .put(Entity.json(incident), Response.class);
+
+        assertEquals(200, response.getStatus());
+        IncidentDto output = response.readEntity(IncidentDto.class);
+        assertNotNull(output.getAssetId());
+        assertNotNull(output.getId());
+
+        assertNull(System.getProperty("GET_ASSET_REACHED"));
+        assertNull(System.getProperty("UPDATE_ASSET_REACHED"));
     }
 
     public static IncidentDto createBasicIncidentDto() {
         IncidentDto incidentDto = new IncidentDto();
         incidentDto.setAssetId(UUID.randomUUID());
         incidentDto.setAssetName("Test asset");
-        incidentDto.setStatus("INCIDENT_CREATED");
+        incidentDto.setStatus(StatusEnum.INCIDENT_CREATED);
         incidentDto.setType(IncidentType.PARKED);
         return incidentDto;
     }

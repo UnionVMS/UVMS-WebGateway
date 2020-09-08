@@ -100,7 +100,23 @@ public class IncidentCollector {
             IncidentDto response = incidentService.createIncident(incident, auth, user);
             return Response.ok(response).build();
         }catch (Exception e){
-            LOG.error("Error while updating incident status: {}", e.getMessage(), e);
+            LOG.error("Error while creating incident: {}", e.getMessage(), e);
+            throw e;
+
+        }
+    }
+
+    @PUT
+    @Path("updateIncident/")
+    @RequiresFeature(UnionVMSFeature.managePolls)
+    public Response updateIncident(@Context HttpServletRequest request, IncidentDto incident) {
+        try {
+            String user = request.getRemoteUser();
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            IncidentDto response = incidentService.updateIncident(incident, auth, user);
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error while updating incident: {}", e.getMessage(), e);
             throw e;
 
         }

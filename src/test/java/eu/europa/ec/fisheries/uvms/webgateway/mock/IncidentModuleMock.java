@@ -30,6 +30,12 @@ public class IncidentModuleMock {
         return Response.ok(incidentDto).build();
     }
 
+    @PUT
+    @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
+    public Response updateIncident(IncidentDto incidentDto) {
+        return Response.ok(incidentDto).build();
+    }
+
     @POST
     @Path("addEventToIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
