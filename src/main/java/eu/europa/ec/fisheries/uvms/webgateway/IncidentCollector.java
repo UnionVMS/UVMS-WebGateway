@@ -7,6 +7,7 @@ import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
+import eu.europa.ec.fisheries.uvms.webgateway.dto.PollIdDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class IncidentCollector {
         try{
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
             String response = incidentService.addSimplePollToIncident(incidentId, auth, request.getRemoteUser(), pollDto.getComment());
-            return Response.ok(response).build();
+            return Response.ok(new PollIdDto(response)).build();
         }catch (Exception e){
             LOG.error("Error creating simple poll for incident: ", e.getMessage(), e);
             throw e;
@@ -83,7 +84,7 @@ public class IncidentCollector {
         try{
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
             String response = incidentService.addPollToIncident(incidentId, pollRequest, auth);
-            return Response.ok(response).build();
+            return Response.ok(new PollIdDto(response)).build();
         }catch (Exception e){
             LOG.error("Error creating poll for incident: ", e.getMessage(), e);
             throw e;

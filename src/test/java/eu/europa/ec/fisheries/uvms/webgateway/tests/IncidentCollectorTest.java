@@ -13,6 +13,7 @@ import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
+import eu.europa.ec.fisheries.uvms.webgateway.dto.PollIdDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -89,7 +90,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
                 .post(Entity.json(comment), Response.class);
 
         assertEquals(200, response.getStatus());
-        String output = response.readEntity(String.class);
+        String output = response.readEntity(PollIdDto.class).getPollId();
         assertNotNull(output);
         assertNotNull(UUID.fromString(output));
 
@@ -116,7 +117,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
                 .post(Entity.json(pollRequest), Response.class);
 
         assertEquals(200, response.getStatus());
-        String output = response.readEntity(String.class);
+        String output = response.readEntity(PollIdDto.class).getPollId();
         assertNotNull(output);
         assertNotNull(UUID.fromString(output));
 
