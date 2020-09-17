@@ -233,7 +233,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
     @OperateOnDeployment("collector")
     public void createManualModeIncident()  {
         IncidentDto incident = createBasicIncidentDto();
-        incident.setType(IncidentType.MANUAL_MODE);
+        incident.setType(IncidentType.MANUAL_POSITION_MODE);
         incident.setExpiryDate(Instant.now().plus(10, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MILLIS));
 
         Response response = getWebTarget()
@@ -281,7 +281,7 @@ public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
     @OperateOnDeployment("collector")
     public void updateManualIncidentToAttempted()  {
         IncidentDto incident = createBasicIncidentDto();
-        incident.setType(IncidentType.MANUAL_MODE);
+        incident.setType(IncidentType.MANUAL_POSITION_MODE);
         incident.setId(555l);
         incident.setStatus(StatusEnum.ATTEMPTED_CONTACT);
 
