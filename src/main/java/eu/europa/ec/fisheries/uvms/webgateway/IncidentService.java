@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 @Stateless
 public class IncidentService {
 
-    private static List<IncidentType> INCIDENT_PARKED_GROUP = Arrays.asList(IncidentType.OWNER_TRANSFER ,IncidentType.SEASONAL_FISHING ,IncidentType.PARKED);
+    private static List<IncidentType> INCIDENT_PARKED_GROUP = Arrays.asList(IncidentType.OWNERSHIP_TRANSFER ,IncidentType.SEASONAL_FISHING ,IncidentType.PARKED);
 
     private WebTarget assetWebTarget;
 
@@ -312,7 +312,7 @@ public class IncidentService {
             return null;
         }
 
-        if(!updatedIncident.getType().equals(IncidentType.MANUAL_MODE) && !updatedIncident.getType().equals(IncidentType.ASSET_NOT_SENDING)){
+        if(!updatedIncident.getType().equals(IncidentType.MANUAL_POSITION_MODE) && !updatedIncident.getType().equals(IncidentType.ASSET_NOT_SENDING)){
             removeAssetFromPreviousReport(updatedIncident.getAssetId().toString(), auth);
             setParkedOnAsset(updatedIncident.getAssetId().toString(), user, true);
         }
