@@ -28,7 +28,7 @@
         <uvms.common.version>4.1.7</uvms.common.version>
         <asset.version>6.7.24</asset.version>
         <movement.version>5.5.19-UVMS</movement.version>
-        <incident.version>0.4.5</incident.version>
+        <incident.version>0.4.6</incident.version>
         <exchange.version>5.3.6-UVMS</exchange.version>
     </properties>
 
