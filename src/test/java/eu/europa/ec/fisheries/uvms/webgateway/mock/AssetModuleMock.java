@@ -2,10 +2,7 @@ package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetBO;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetListResponse;
-import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
+import eu.europa.ec.fisheries.uvms.asset.client.model.*;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -17,7 +14,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Path("/asset/rest")
@@ -112,5 +111,17 @@ public class AssetModuleMock {
     public Response upsertAsset(AssetBO assetBo) {
         System.setProperty("UPDATE_ASSET_REACHED", "true");
         return Response.ok(assetBo).build();
+    }
+
+    @GET
+    @Path("internal/pollListForAsset/{assetId}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getPollBySearchCriteria(@PathParam("assetId") String assetId) {
+            List<SanePollDto> sanePollDtos = new ArrayList<>();
+            SanePollDto pollDto = new SanePollDto();
+            pollDto.setAssetId(UUID.fromString(assetId));
+            pollDto.setId(UUID.randomUUID());
+            sanePollDtos.add(pollDto);
+            return Response.ok(sanePollDtos).header("MDC", MDC.get("requestId")).build();
     }
 }

@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
-public class ReportCollectorTest extends BuildStreamCollectorDeployment {
+public class ReportRestResourceTest extends BuildStreamCollectorDeployment {
 
     @Test
     @OperateOnDeployment("collector")
