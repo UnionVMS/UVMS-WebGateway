@@ -24,9 +24,9 @@ import javax.ws.rs.core.Response;
 @Path("incidents")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class IncidentCollector {
+public class IncidentRestResource {
 
-    private final static Logger LOG = LoggerFactory.getLogger(IncidentCollector.class);
+    private final static Logger LOG = LoggerFactory.getLogger(IncidentRestResource.class);
 
     @Inject
     IncidentService incidentService;

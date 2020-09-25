@@ -32,7 +32,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
-public class IncidentCollectorTest extends BuildStreamCollectorDeployment {
+public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
 
     private String INCIDENT_MODULE_MOCK_ON_ID = "INCIDENT_MODULE_MOCK_ON_ID";
 

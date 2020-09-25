@@ -21,7 +21,7 @@ import java.util.List;
 @Path("reports")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ReportCollector {
+public class ReportRestResource {
 
     @Inject
     private AssetClient assetClient;

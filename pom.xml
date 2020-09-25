@@ -16,7 +16,7 @@
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
     <properties>
-        <docker.dev.version>3.43.9</docker.dev.version>
+        <docker.dev.version>3.45.9</docker.dev.version>
         <usm4uvms.version>4.1.3</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
@@ -26,7 +26,7 @@
 
         <uvms.pom.version>3.4</uvms.pom.version>
         <uvms.common.version>4.1.7</uvms.common.version>
-        <asset.version>6.7.25</asset.version>
+        <asset.version>6.7.26</asset.version>
         <movement.version>5.5.20-UVMS</movement.version>
         <incident.version>0.4.6</incident.version>
         <exchange.version>5.3.6-UVMS</exchange.version>
