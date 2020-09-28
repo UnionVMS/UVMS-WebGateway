@@ -4,12 +4,12 @@ import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
+import eu.europa.ec.fisheries.uvms.asset.client.model.SimpleCreatePoll;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
-import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
@@ -75,7 +75,7 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
     @Test
     @OperateOnDeployment("collector")
     public void addSimplePollToIncidentTest()  {
-        CommentDto comment = new CommentDto();
+        SimpleCreatePoll comment = new SimpleCreatePoll();
         comment.setComment("add simple poll to asset test");
 
         System.clearProperty(INCIDENT_MODULE_MOCK_ON_ID);
