@@ -80,7 +80,7 @@ public class AssetModuleMock {
     @POST
     @Path("internal/createPollForAsset/{id}")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response createPollForAsset(@PathParam("id") String assetId, @QueryParam("username") String username, @QueryParam("comment") String comment) {
+    public Response createPollForAsset(@PathParam("id") String assetId, @QueryParam("username") String username, SimpleCreatePoll createPoll) {
         CreatePollResultDto resultDto = new CreatePollResultDto();
         resultDto.getSentPolls().add(UUID.randomUUID().toString());
         return Response.ok(resultDto).build();

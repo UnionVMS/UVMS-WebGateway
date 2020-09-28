@@ -2,8 +2,8 @@ package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
+import eu.europa.ec.fisheries.uvms.asset.client.model.SimpleCreatePoll;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
-import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CommentDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
@@ -66,7 +66,7 @@ public class IncidentRestResource {
     @POST
     @Path("createSimplePollForIncident/{incidentId}")
     @RequiresFeature(UnionVMSFeature.managePolls)
-    public Response createSimplePollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, CommentDto pollDto) {
+    public Response createSimplePollForIncident(@Context HttpServletRequest request, @PathParam("incidentId") String incidentId, SimpleCreatePoll pollDto) {
         try{
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
             String response = incidentService.addSimplePollToIncident(incidentId, auth, request.getRemoteUser(), pollDto.getComment());

@@ -3,10 +3,7 @@ package eu.europa.ec.fisheries.uvms.webgateway;
 import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetBO;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetIdentifier;
-import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
+import eu.europa.ec.fisheries.uvms.asset.client.model.*;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.exchange.client.ExchangeRestClient;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.EventCreationDto;
@@ -246,7 +243,7 @@ public class IncidentService {
         IncidentDto incident = getIncident(incidentId, auth);
         UUID assetId = incident.getAssetId();
 
-        String pollId = assetClient.createPollForAsset(assetId, username, comment);
+        String pollId = assetClient.createPollForAsset(assetId, username, comment, PollType.MANUAL_POLL);
 
         EventCreationDto eventCreation = new EventCreationDto();
         eventCreation.setRelatedObjectId(UUID.fromString(pollId));
