@@ -29,7 +29,7 @@
         <asset.version>6.7.27</asset.version>
         <movement.version>5.5.21-UVMS</movement.version>
         <incident.version>0.4.7</incident.version>
-        <exchange.version>5.3.7-UVMS</exchange.version>
+        <exchange.version>5.3.8-UVMS</exchange.version>
     </properties>
 
     <dependencies>

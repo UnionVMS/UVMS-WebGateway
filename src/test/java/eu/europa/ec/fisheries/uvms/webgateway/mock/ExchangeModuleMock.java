@@ -39,6 +39,11 @@ public class ExchangeModuleMock {
         logRefType.setType(TypeRefType.POLL);
         response.setTypeRef(logRefType);
 
+        LogRefType relatedData = new LogRefType();
+        relatedData.setRefGuid(UUID.randomUUID().toString());
+        relatedData.setType(TypeRefType.MOVEMENT);
+        response.setRelatedLogData(relatedData);
+
         response.getHistory().add(createExchangeLogStatusHistory(ExchangeLogStatusTypeType.SENT));
         response.getHistory().add(createExchangeLogStatusHistory(ExchangeLogStatusTypeType.PENDING));
         response.getHistory().add(createExchangeLogStatusHistory(ExchangeLogStatusTypeType.SUCCESSFUL));
