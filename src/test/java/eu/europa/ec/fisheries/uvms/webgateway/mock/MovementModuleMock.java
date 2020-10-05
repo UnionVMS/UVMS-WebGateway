@@ -5,6 +5,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -62,5 +63,21 @@ public class MovementModuleMock {
         micro.setLocation(point);
 
         return Response.ok(micro).build();
+    }
+
+    @GET
+    @Path("/getMovement/{movementId}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMovementById(@PathParam("movementId") UUID movementId) {
+        MovementDto movement = new MovementDto();
+        movement.setId(movementId);
+        movement.setAsset(UUID.randomUUID().toString());
+        movement.setTimestamp(Instant.now());
+        MovementPoint location = new MovementPoint();
+        location.setLatitude(12d);
+        location.setLongitude(13d);
+        movement.setLocation(location);
+        movement.setSource(MovementSourceType.INMARSAT_C);
+        return Response.ok(movement).build();
     }
 }

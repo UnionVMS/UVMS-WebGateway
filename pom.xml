@@ -11,7 +11,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.web-gateway</groupId>
     <artifactId>web-gateway</artifactId>
-    <version>0.13.8-SNAPSHOT</version>
+    <version>0.13.9-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
@@ -29,7 +29,7 @@
         <asset.version>6.7.27</asset.version>
         <movement.version>5.5.21-UVMS</movement.version>
         <incident.version>0.4.8-SNAPSHOT</incident.version>
-        <exchange.version>5.3.7-UVMS</exchange.version>
+        <exchange.version>5.3.8-UVMS</exchange.version>
     </properties>
 
     <dependencies>
