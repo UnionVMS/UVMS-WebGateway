@@ -11,7 +11,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.web-gateway</groupId>
     <artifactId>web-gateway</artifactId>
-    <version>0.13.8-SNAPSHOT</version>
+    <version>0.13.8</version>
     <packaging>war</packaging>
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
@@ -150,7 +150,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-WebGateway.git</connection>
-        <tag>stream-collector-0.9.8</tag>
+        <tag>web-gateway-0.13.8</tag>
     </scm>
 
     <build>
