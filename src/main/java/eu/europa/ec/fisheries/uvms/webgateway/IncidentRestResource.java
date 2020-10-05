@@ -4,6 +4,7 @@ import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.asset.client.model.SimpleCreatePoll;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.UpdateIncidentDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
@@ -108,16 +109,47 @@ public class IncidentRestResource {
     }
 
     @PUT
-    @Path("updateIncident/")
+    @Path("updateIncidentType/")
     @RequiresFeature(UnionVMSFeature.managePolls)
-    public Response updateIncident(@Context HttpServletRequest request, IncidentDto incident) {
+    public Response updateIncidentType(@Context HttpServletRequest request, UpdateIncidentDto update) {
         try {
             String user = request.getRemoteUser();
             String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-            IncidentDto response = incidentService.updateIncident(incident, auth, user);
+            IncidentDto response = incidentService.updateIncidentType(update, auth, user);
             return Response.ok(response).build();
         }catch (Exception e){
-            LOG.error("Error while updating incident: {}", e.getMessage(), e);
+            LOG.error("Error while updating incident type: {}", e.getMessage(), e);
+            throw e;
+
+        }
+    }
+
+    @PUT
+    @Path("updateIncidentStatus/")
+    @RequiresFeature(UnionVMSFeature.managePolls)
+    public Response updateIncidentStatus(@Context HttpServletRequest request, UpdateIncidentDto update) {
+        try {
+            String user = request.getRemoteUser();
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            IncidentDto response = incidentService.updateIncidentStatus(update, auth, user);
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error while updating incident status: {}", e.getMessage(), e);
+            throw e;
+
+        }
+    }
+
+    @PUT
+    @Path("updateIncidentExpiry/")
+    @RequiresFeature(UnionVMSFeature.managePolls)
+    public Response updateIncidentExpiry(@Context HttpServletRequest request, UpdateIncidentDto update) {
+        try {
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            IncidentDto response = incidentService.updateIncidentExpiry(update, auth);
+            return Response.ok(response).build();
+        }catch (Exception e){
+            LOG.error("Error while updating incident expiry date: {}", e.getMessage(), e);
             throw e;
 
         }
