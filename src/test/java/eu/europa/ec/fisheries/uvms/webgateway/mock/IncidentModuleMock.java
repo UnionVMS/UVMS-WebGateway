@@ -3,7 +3,9 @@ package eu.europa.ec.fisheries.uvms.webgateway.mock;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.EventCreationDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.UpdateIncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -31,9 +33,24 @@ public class IncidentModuleMock {
     }
 
     @PUT
+    @Path("updateType")
     @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
-    public Response updateIncident(IncidentDto incidentDto) {
-        return Response.ok(incidentDto).build();
+    public Response updateIncidentType(UpdateIncidentDto update) {
+        return Response.ok(incidentFromUpdate(update)).build();
+    }
+
+    @PUT
+    @Path("updateStatus")
+    @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
+    public Response updateIncidentStatus(UpdateIncidentDto update) {
+        return Response.ok(incidentFromUpdate(update)).build();
+    }
+
+    @PUT
+    @Path("updateExpiry")
+    @RequiresFeature(UnionVMSFeature.manageAlarmsOpenTickets)
+    public Response updateIncidentExpiry(UpdateIncidentDto update) {
+        return Response.ok(incidentFromUpdate(update)).build();
     }
 
     @POST
@@ -65,6 +82,7 @@ public class IncidentModuleMock {
         IncidentDto incident = new IncidentDto();
         incident.setId(incidentId);
         incident.setAssetId(UUID.randomUUID());
+        incident.setType(IncidentType.ASSET_NOT_SENDING);
         return Response.ok(incident).build();
     }
 
@@ -95,4 +113,14 @@ public class IncidentModuleMock {
         return RelatedObjectType.NONE;
     }
 
+    private IncidentDto incidentFromUpdate(UpdateIncidentDto update){
+        IncidentDto dto = new IncidentDto();
+        dto.setType(update.getType());
+        dto.setStatus(update.getStatus());
+        dto.setId(update.getIncidentId());
+        dto.setExpiryDate(update.getExpiryDate());
+        dto.setAssetId(UUID.randomUUID());
+
+        return dto;
+    }
 }

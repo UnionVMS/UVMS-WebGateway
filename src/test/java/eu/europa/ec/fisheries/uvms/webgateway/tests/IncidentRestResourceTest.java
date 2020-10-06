@@ -7,6 +7,7 @@ import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
 import eu.europa.ec.fisheries.uvms.asset.client.model.SimpleCreatePoll;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.UpdateIncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
@@ -256,17 +257,41 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
     @Test
     @OperateOnDeployment("collector")
     public void updateParkedIncidentToResolved()  {
-        IncidentDto incident = createBasicIncidentDto();
-        incident.setId(555l);
-        incident.setType(IncidentType.PARKED);
-        incident.setStatus(StatusEnum.RESOLVED);
+        UpdateIncidentDto update = new UpdateIncidentDto();
+        update.setIncidentId(555l);
+        update.setType(IncidentType.PARKED);
+        update.setStatus(StatusEnum.RESOLVED);
 
         Response response = getWebTarget()
                 .path("incidents")
-                .path("updateIncident")
+                .path("updateIncidentStatus")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .put(Entity.json(incident), Response.class);
+                .put(Entity.json(update), Response.class);
+
+        assertEquals(200, response.getStatus());
+        IncidentDto output = response.readEntity(IncidentDto.class);
+        assertNotNull(output.getAssetId());
+        assertNotNull(output.getId());
+
+        assertEquals("true", System.getProperty("GET_ASSET_REACHED"));
+        assertEquals("true", System.getProperty("UPDATE_ASSET_REACHED"));
+    }
+
+    @Test
+    @OperateOnDeployment("collector")
+    public void updateIncidentTypeToParked()  {
+        UpdateIncidentDto update = new UpdateIncidentDto();
+        update.setIncidentId(555l);
+        update.setType(IncidentType.PARKED);
+        update.setStatus(StatusEnum.PARKED);
+
+        Response response = getWebTarget()
+                .path("incidents")
+                .path("updateIncidentType")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .put(Entity.json(update), Response.class);
 
         assertEquals(200, response.getStatus());
         IncidentDto output = response.readEntity(IncidentDto.class);
@@ -280,17 +305,17 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
     @Test
     @OperateOnDeployment("collector")
     public void updateManualIncidentToAttempted()  {
-        IncidentDto incident = createBasicIncidentDto();
-        incident.setType(IncidentType.MANUAL_POSITION_MODE);
-        incident.setId(555l);
-        incident.setStatus(StatusEnum.ATTEMPTED_CONTACT);
+        UpdateIncidentDto update = new UpdateIncidentDto();
+        update.setIncidentId(555l);
+        update.setType(IncidentType.MANUAL_POSITION_MODE);
+        update.setStatus(StatusEnum.ATTEMPTED_CONTACT);
 
         Response response = getWebTarget()
                 .path("incidents")
-                .path("updateIncident")
+                .path("updateIncidentStatus")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .put(Entity.json(incident), Response.class);
+                .put(Entity.json(update), Response.class);
 
         assertEquals(200, response.getStatus());
         IncidentDto output = response.readEntity(IncidentDto.class);
@@ -299,6 +324,30 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
 
         assertNull(System.getProperty("GET_ASSET_REACHED"));
         assertNull(System.getProperty("UPDATE_ASSET_REACHED"));
+    }
+
+    @Test
+    @OperateOnDeployment("collector")
+    public void updateIncidentExpiry()  {
+        UpdateIncidentDto update = new UpdateIncidentDto();
+        update.setIncidentId(555l);
+        update.setType(IncidentType.MANUAL_POSITION_MODE);
+        update.setStatus(StatusEnum.ATTEMPTED_CONTACT);
+        update.setExpiryDate(Instant.now());
+
+        Response response = getWebTarget()
+                .path("incidents")
+                .path("updateIncidentExpiry")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .put(Entity.json(update), Response.class);
+
+        assertEquals(200, response.getStatus());
+        IncidentDto output = response.readEntity(IncidentDto.class);
+        assertNotNull(output.getAssetId());
+        assertNotNull(output.getId());
+        assertEquals(update.getExpiryDate().truncatedTo(ChronoUnit.MILLIS), output.getExpiryDate());
+
     }
 
     public static IncidentDto createBasicIncidentDto() {

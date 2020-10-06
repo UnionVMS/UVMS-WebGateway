@@ -21,10 +21,6 @@ public class Constants {
     public static final String MOVEMENT_SOURCE = "movementSource";
 
 
-
-    public static final String MODULE_REST = "/rest";
-    public static final String MODULE_NAME = "/rules";
-
     public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
     public static final String ACCESS_CONTROL_ALLOW_METHODS_ALL = "*";
 
@@ -33,5 +29,11 @@ public class Constants {
 
     public static final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
     public static final String ACCESS_CONTROL_ALLOW_HEADERS_ALL = "Content-Type, X-Requested-With, Authorization, Cache-Control";
+
+    public static final String UPDATE_INCIDENT_TYPE_ADDRESS = "updateType";
+    public static final String UPDATE_INCIDENT_STATUS_ADDRESS = "updateStatus";
+    public static final String UPDATE_INCIDENT_EXPIRY_ADDRESS = "updateExpiry";
+
+
 
 }

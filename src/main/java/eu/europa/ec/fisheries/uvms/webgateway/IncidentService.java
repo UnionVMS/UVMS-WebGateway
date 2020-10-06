@@ -9,6 +9,7 @@ import eu.europa.ec.fisheries.uvms.exchange.client.ExchangeRestClient;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.EventCreationDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.IncidentLogDto;
+import eu.europa.ec.fisheries.uvms.incident.model.dto.UpdateIncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
@@ -181,33 +182,45 @@ public class IncidentService {
         return json.fromJson(jsonDto, IncidentDto.class);
     }
 
-    public IncidentDto updateIncident(IncidentDto incident, String auth, String user){
-        IncidentDto originalIncident = getIncident("" + incident.getId(), auth);
-        IncidentDto updatedIncident = updateIncident(incident, auth);
+    public IncidentDto updateIncidentType(UpdateIncidentDto update, String auth, String user){
+        IncidentDto originalIncident = getIncident("" + update.getIncidentId(), auth);
+        IncidentDto updatedIncident = updateIncident(update, Constants.UPDATE_INCIDENT_TYPE_ADDRESS, auth);
 
-        if(updatedIncident.getStatus().equals(StatusEnum.RESOLVED)){
-            if(isIncidentTypeInParkedGroup(incident)){
-                setParkedOnAsset(updatedIncident.getAssetId().toString(), user, false);
-            }
-        }else{
-            if(isIncidentTypeInParkedGroup(incident)){
-                if(!originalIncident.getType().equals(updatedIncident.getType())) {
-                    setParkedOnAsset(updatedIncident.getAssetId().toString(), user, true);
-                    removeAssetFromPreviousReport(updatedIncident.getAssetId().toString(), auth);
-                }
+        if(isIncidentTypeInParkedGroup(updatedIncident)){
+            if(!originalIncident.getType().equals(updatedIncident.getType())) {
+                setParkedOnAsset(updatedIncident.getAssetId().toString(), user, true);
+                removeAssetFromPreviousReport(updatedIncident.getAssetId().toString(), auth);
             }
         }
 
         return updatedIncident;
     }
 
+    public IncidentDto updateIncidentStatus(UpdateIncidentDto update, String auth, String user){
+        IncidentDto updatedIncident = updateIncident(update, Constants.UPDATE_INCIDENT_STATUS_ADDRESS, auth);
 
-    private IncidentDto updateIncident(IncidentDto incident, String auth){
+        if(updatedIncident.getStatus().equals(StatusEnum.RESOLVED)){
+            if(isIncidentTypeInParkedGroup(updatedIncident)){
+                setParkedOnAsset(updatedIncident.getAssetId().toString(), user, false);
+            }
+        }
+
+        return updatedIncident;
+    }
+
+    public IncidentDto updateIncidentExpiry(UpdateIncidentDto update, String auth){
+        IncidentDto updatedIncident = updateIncident(update, Constants.UPDATE_INCIDENT_EXPIRY_ADDRESS, auth);
+
+        return updatedIncident;
+    }
+
+    private IncidentDto updateIncident(UpdateIncidentDto update, String updateAddress, String auth){
         String jsonDto = incidentWebTarget
                 .path("incident")
+                .path(updateAddress)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth)
-                .put(Entity.json(incident), String.class);
+                .put(Entity.json(update), String.class);
 
         if(jsonDto.contains("\"code\":")){
             String errorDeskription = json.fromJson(jsonDto, AppError.class).description;
