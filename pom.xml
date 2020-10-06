@@ -25,7 +25,7 @@
         <docker.dev.stop.phase>verify</docker.dev.stop.phase>
 
         <uvms.pom.version>3.4</uvms.pom.version>
-        <uvms.common.version>4.1.7</uvms.common.version>
+        <uvms.common.version>4.1.8</uvms.common.version>
         <asset.version>6.7.28</asset.version>
         <movement.version>5.5.21-UVMS</movement.version>
         <incident.version>0.4.8</incident.version>
