@@ -15,6 +15,7 @@ import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.PollIdDto;
+import eu.europa.ec.fisheries.uvms.webgateway.dto.PollInfoDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -200,8 +201,10 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
         Optional<IncidentLogDto> pollIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.POLL_CREATED)).findAny();
         assertTrue(pollIncidentLog.isPresent());
 
-        ExchangeLogStatusType outputPollStatus = output.getRelatedObjects().getPolls().get(pollIncidentLog.get().getRelatedObjectId().toString());
+        PollInfoDto outputPollStatus = output.getRelatedObjects().getPolls().get(pollIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputPollStatus != null);
+        assertNotNull(outputPollStatus.getPollStatus());
+        assertNotNull(outputPollStatus.getPollInfo());
 
     }
 

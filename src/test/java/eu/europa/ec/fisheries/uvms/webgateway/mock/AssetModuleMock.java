@@ -1,12 +1,10 @@
 package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
-import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.*;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.MDC;
 
 import javax.ejb.Stateless;
@@ -116,12 +114,22 @@ public class AssetModuleMock {
     @GET
     @Path("internal/pollListForAsset/{assetId}")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response getPollBySearchCriteria(@PathParam("assetId") String assetId) {
+    public Response getPollListByAsset(@PathParam("assetId") String assetId) {
             List<SanePollDto> sanePollDtos = new ArrayList<>();
             SanePollDto pollDto = new SanePollDto();
             pollDto.setAssetId(UUID.fromString(assetId));
             pollDto.setId(UUID.randomUUID());
             sanePollDtos.add(pollDto);
             return Response.ok(sanePollDtos).header("MDC", MDC.get("requestId")).build();
+    }
+
+    @GET
+    @Path("internal/pollInfo/{pollId}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getPollInfo(@PathParam("pollId") String pollId) {
+        SanePollDto pollDto = new SanePollDto();
+        pollDto.setAssetId(UUID.randomUUID());
+        pollDto.setId(UUID.fromString(pollId));
+        return Response.ok(pollDto).header("MDC", MDC.get("requestId")).build();
     }
 }
