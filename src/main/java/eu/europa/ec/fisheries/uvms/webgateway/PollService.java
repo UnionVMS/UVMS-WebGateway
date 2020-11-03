@@ -1,6 +1,7 @@
 package eu.europa.ec.fisheries.uvms.webgateway;
 
 import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
+import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollId;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.SanePollDto;
 import eu.europa.ec.fisheries.uvms.exchange.client.ExchangeRestClient;
@@ -44,5 +45,21 @@ public class PollService {
 
         return returnMap;
 
+    }
+
+    public PollInfoDto getPollInfo(UUID pollId){
+        SanePollDto pollInfo = assetClient.getPollInfo(pollId);
+        if(pollInfo == null){
+            return null;
+        }
+
+        ExchangeLogStatusType pollStatus = exchangeClient.getPollStatus(pollId.toString());
+        MovementDto movement = null;
+        if (pollStatus != null && pollStatus.getRelatedLogData() != null) {
+            UUID movementId = UUID.fromString(pollStatus.getRelatedLogData().getRefGuid());
+            movement = movementClient.getMovementById(movementId);
+        }
+
+        return new PollInfoDto(pollInfo, pollStatus, movement);
     }
 }

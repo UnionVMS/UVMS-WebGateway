@@ -18,6 +18,7 @@ import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
+import eu.europa.ec.fisheries.uvms.webgateway.dto.PollInfoDto;
 import eu.europa.ec.fisheries.uvms.webgateway.filter.AppError;
 
 import javax.annotation.PostConstruct;
@@ -68,6 +69,12 @@ public class IncidentService {
     @Inject
     private MovementRestClient movementClient;
 
+    @Inject
+    ExchangeRestClient exchangeRestClient;
+
+    @Inject
+    PollService pollService;
+
     @PostConstruct
     private void setUpClient() {
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
@@ -82,9 +89,6 @@ public class IncidentService {
 
         json = new JsonBConfiguratorWebGateway().getContext(null);
     }
-
-    @Inject
-    ExchangeRestClient exchangeRestClient;
 
     public ExtendedIncidentLogDto incidentLogForIncident(String incidentId, String auth){
         Map<Long, IncidentLogDto> dto = getIncidentLogForIncident(incidentId, auth);
@@ -102,8 +106,8 @@ public class IncidentService {
                 response.getRelatedObjects().getPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
 
             }else if(RelatedObjectType.POLL.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {
-                ExchangeLogStatusType pollStatus = exchangeRestClient.getPollStatus(logDto.getRelatedObjectId().toString());
-                response.getRelatedObjects().getPolls().put(logDto.getRelatedObjectId().toString(), pollStatus);
+                PollInfoDto pollInfo = pollService.getPollInfo(logDto.getRelatedObjectId());
+                response.getRelatedObjects().getPolls().put(logDto.getRelatedObjectId().toString(), pollInfo);
             }
 
         }
