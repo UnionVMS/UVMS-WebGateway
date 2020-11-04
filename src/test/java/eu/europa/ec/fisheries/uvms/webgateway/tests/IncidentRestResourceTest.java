@@ -11,7 +11,7 @@ import eu.europa.ec.fisheries.uvms.incident.model.dto.UpdateIncidentDto;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.EventTypeEnum;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.IncidentType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.webgateway.BuildStreamCollectorDeployment;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.PollIdDto;
@@ -174,7 +174,7 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
         Optional<IncidentLogDto> movementIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.MANUAL_POSITION)).findAny();
         assertTrue(movementIncidentLog.isPresent());
 
-        MicroMovement outputMovement = output.getRelatedObjects().getPositions().get(movementIncidentLog.get().getRelatedObjectId().toString());
+        MovementDto outputMovement = output.getRelatedObjects().getPositions().get(movementIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputMovement != null);
 
     }

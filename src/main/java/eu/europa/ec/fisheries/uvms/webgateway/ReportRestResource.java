@@ -39,7 +39,7 @@ public class ReportRestResource {
                 request.getSize(),
                 request.isIncludeInactivated());
 
-        String response = movementClient.getMicroMovementsForConnectIdsBetweenDates(assetIds,
+        String response = movementClient.getMovementsForConnectIdsBetweenDates(assetIds,
                 DateUtils.stringToDate(request.getStartDate()),
                 DateUtils.stringToDate(request.getEndDate()),
                 request.getSources());

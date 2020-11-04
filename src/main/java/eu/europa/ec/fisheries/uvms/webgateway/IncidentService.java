@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.webgateway;
 
-import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.*;
@@ -16,7 +15,7 @@ import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.RelatedObjectType;
 import eu.europa.ec.fisheries.uvms.incident.model.dto.enums.StatusEnum;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.ExtendedIncidentLogDto;
 import eu.europa.ec.fisheries.uvms.webgateway.dto.PollInfoDto;
 import eu.europa.ec.fisheries.uvms.webgateway.filter.AppError;
@@ -102,7 +101,7 @@ public class IncidentService {
                 response.getRelatedObjects().getNotes().put(logDto.getRelatedObjectId().toString(), note);
 
             }else if(RelatedObjectType.MOVEMENT.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {
-                MicroMovement microMovement = movementClient.getMicroMovementById(logDto.getRelatedObjectId());
+                MovementDto microMovement = movementClient.getMovementById(logDto.getRelatedObjectId());
                 response.getRelatedObjects().getPositions().put(logDto.getRelatedObjectId().toString(), microMovement);
 
             }else if(RelatedObjectType.POLL.equals(logDto.getRelatedObjectType()) && logDto.getRelatedObjectId() != null) {

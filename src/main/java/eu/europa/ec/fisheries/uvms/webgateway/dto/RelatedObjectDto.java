@@ -1,7 +1,7 @@
 package eu.europa.ec.fisheries.uvms.webgateway.dto;
 
 import eu.europa.ec.fisheries.uvms.asset.client.model.Note;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class RelatedObjectDto {
 
     private Map<String, PollInfoDto> polls = new HashMap<>();
 
-    private Map<String, MicroMovement> positions = new HashMap<>();
+    private Map<String, MovementDto> positions = new HashMap<>();
 
     public Map<String, Note> getNotes() {
         return notes;
@@ -29,11 +29,11 @@ public class RelatedObjectDto {
         this.polls = polls;
     }
 
-    public Map<String, MicroMovement> getPositions() {
+    public Map<String, MovementDto> getPositions() {
         return positions;
     }
 
-    public void setPositions(Map<String, MicroMovement> positions) {
+    public void setPositions(Map<String, MovementDto> positions) {
         this.positions = positions;
     }
 }
