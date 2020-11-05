@@ -26,7 +26,7 @@
 
         <uvms.pom.version>3.4</uvms.pom.version>
         <uvms.common.version>4.1.8</uvms.common.version>
-        <asset.version>6.8.0</asset.version>
+        <asset.version>6.8.1</asset.version>
         <movement.version>5.6.0-UVMS</movement.version>
         <incident.version>1.0.8</incident.version>
         <exchange.version>5.3.13-UVMS</exchange.version>

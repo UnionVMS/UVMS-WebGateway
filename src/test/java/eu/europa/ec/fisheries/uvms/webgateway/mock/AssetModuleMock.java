@@ -2,9 +2,12 @@ package eu.europa.ec.fisheries.uvms.webgateway.mock;
 
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollRequestType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.*;
+import eu.europa.ec.fisheries.uvms.asset.client.model.mt.MobileTerminal;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.mobileterminal.model.dto.CreatePollResultDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.MDC;
 
 import javax.ejb.Stateless;
@@ -118,12 +121,14 @@ public class AssetModuleMock {
     @Path("internal/pollListForAsset/{assetId}")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getPollListByAsset(@PathParam("assetId") String assetId) {
-            List<SanePollDto> sanePollDtos = new ArrayList<>();
-            SanePollDto pollDto = new SanePollDto();
-            pollDto.setAssetId(UUID.fromString(assetId));
-            pollDto.setId(UUID.randomUUID());
-            sanePollDtos.add(pollDto);
-            return Response.ok(sanePollDtos).header("MDC", MDC.get("requestId")).build();
+        List<SanePollDto> sanePollDtos = new ArrayList<>();
+        SanePollDto pollDto = new SanePollDto();
+        pollDto.setAssetId(UUID.fromString(assetId));
+        pollDto.setMobileterminalId(UUID.randomUUID());
+        pollDto.setCreateTime(Instant.now());
+        pollDto.setId(UUID.randomUUID());
+        sanePollDtos.add(pollDto);
+        return Response.ok(sanePollDtos).header("MDC", MDC.get("requestId")).build();
     }
 
     @GET
@@ -132,7 +137,22 @@ public class AssetModuleMock {
     public Response getPollInfo(@PathParam("pollId") String pollId) {
         SanePollDto pollDto = new SanePollDto();
         pollDto.setAssetId(UUID.randomUUID());
+        pollDto.setMobileterminalId(UUID.randomUUID());
+        pollDto.setCreateTime(Instant.now());
         pollDto.setId(UUID.fromString(pollId));
         return Response.ok(pollDto).header("MDC", MDC.get("requestId")).build();
+    }
+
+    @GET
+    @Path("internal/mobileTerminalAtDate/{mtId}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMobileTerminalAtDate(@PathParam("mtId") UUID mtId, @QueryParam("date") String date) {
+        MobileTerminal mt = new MobileTerminal();
+        mt.setId(mtId);
+        Instant instant = (date == null ? Instant.now() : DateUtils.stringToDate(date));
+        mt.setCreateTime(instant);
+        mt.setUpdatetime(instant);
+        mt.setComment("Asset module mock get note FTW");
+        return Response.ok(mt).header("MDC", MDC.get("requestId")).build();
     }
 }

@@ -232,6 +232,8 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
         assertTrue(outputPollStatus != null);
         assertNotNull(outputPollStatus.getPollStatus());
         assertNotNull(outputPollStatus.getPollInfo());
+        assertNotNull(outputPollStatus.getMobileTerminalSnapshot());
+        assertNotNull(outputPollStatus.getMobileTerminalSnapshot().getId());
 
     }
 
