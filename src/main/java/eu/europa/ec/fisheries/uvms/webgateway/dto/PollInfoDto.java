@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.webgateway.dto;
 
 import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.SanePollDto;
+import eu.europa.ec.fisheries.uvms.asset.client.model.mt.MobileTerminal;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 
 public class PollInfoDto {
@@ -12,13 +13,16 @@ public class PollInfoDto {
 
     MovementDto movement;
 
+    MobileTerminal mobileTerminalSnapshot;
+
     public PollInfoDto() {
     }
 
-    public PollInfoDto(SanePollDto pollInfo, ExchangeLogStatusType pollStatus, MovementDto movement) {
+    public PollInfoDto(SanePollDto pollInfo, ExchangeLogStatusType pollStatus, MovementDto movement, MobileTerminal mt) {
         this.pollInfo = pollInfo;
         this.pollStatus = pollStatus;
         this.movement = movement;
+        mobileTerminalSnapshot = mt;
     }
 
     public SanePollDto getPollInfo() {
@@ -43,5 +47,13 @@ public class PollInfoDto {
 
     public void setMovement(MovementDto movement) {
         this.movement = movement;
+    }
+
+    public MobileTerminal getMobileTerminalSnapshot() {
+        return mobileTerminalSnapshot;
+    }
+
+    public void setMobileTerminalSnapshot(MobileTerminal mobileTerminalSnapshot) {
+        this.mobileTerminalSnapshot = mobileTerminalSnapshot;
     }
 }

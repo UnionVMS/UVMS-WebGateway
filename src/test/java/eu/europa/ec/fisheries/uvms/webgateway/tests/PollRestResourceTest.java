@@ -43,6 +43,8 @@ public class PollRestResourceTest extends BuildStreamCollectorDeployment {
 
         assertNotNull(pollInfo.getPollInfo());
         assertNotNull(pollInfo.getPollStatus());
+        assertNotNull(pollInfo.getMobileTerminalSnapshot());
+        assertNotNull(pollInfo.getMobileTerminalSnapshot().getId());
 
         assertNotNull(output.get(pollInfo.getPollInfo().getId().toString()));
     }

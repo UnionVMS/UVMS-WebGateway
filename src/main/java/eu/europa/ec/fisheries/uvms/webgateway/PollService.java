@@ -4,6 +4,7 @@ import eu.europa.ec.fisheries.schema.exchange.v1.ExchangeLogStatusType;
 import eu.europa.ec.fisheries.schema.mobileterminal.polltypes.v1.PollId;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.SanePollDto;
+import eu.europa.ec.fisheries.uvms.asset.client.model.mt.MobileTerminal;
 import eu.europa.ec.fisheries.uvms.exchange.client.ExchangeRestClient;
 import eu.europa.ec.fisheries.uvms.movement.client.MovementRestClient;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
@@ -35,12 +36,15 @@ public class PollService {
 
         for (SanePollDto pollDto : pollsForAsset) {
             ExchangeLogStatusType pollStatus = exchangeClient.getPollStatus(pollDto.getId().toString());
+
+            MobileTerminal mtAtDate = assetClient.getMtAtDate(pollDto.getMobileterminalId(), pollDto.getCreateTime());
+
             MovementDto movement = null;
             if (pollStatus != null && pollStatus.getRelatedLogData() != null) {
                 UUID movementId = UUID.fromString(pollStatus.getRelatedLogData().getRefGuid());
                 movement = movementClient.getMovementById(movementId);
             }
-            returnMap.put(pollDto.getId(), new PollInfoDto(pollDto, pollStatus, movement));
+            returnMap.put(pollDto.getId(), new PollInfoDto(pollDto, pollStatus, movement, mtAtDate));
         }
 
         return returnMap;
@@ -53,6 +57,8 @@ public class PollService {
             return null;
         }
 
+        MobileTerminal mtAtDate = assetClient.getMtAtDate(pollInfo.getMobileterminalId(), pollInfo.getCreateTime());
+
         ExchangeLogStatusType pollStatus = exchangeClient.getPollStatus(pollId.toString());
         MovementDto movement = null;
         if (pollStatus != null && pollStatus.getRelatedLogData() != null) {
@@ -60,6 +66,6 @@ public class PollService {
             movement = movementClient.getMovementById(movementId);
         }
 
-        return new PollInfoDto(pollInfo, pollStatus, movement);
+        return new PollInfoDto(pollInfo, pollStatus, movement, mtAtDate);
     }
 }
