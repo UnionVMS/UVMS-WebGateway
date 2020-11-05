@@ -176,8 +176,7 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
         Optional<IncidentLogDto> noteIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.NOTE_CREATED)).findAny();
         assertTrue(noteIncidentLog.isPresent());
 
-        Note outputNote = output.getRelatedObjects().getNotes().get(noteIncidentLog.get().getRelatedObjectId().toString());
-        assertTrue(outputNote == null);
+        assertTrue(output.getRelatedObjects().getNotes().isEmpty());
 
     }
 
