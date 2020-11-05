@@ -139,6 +139,9 @@ public class IncidentService {
                 .header(HttpHeaders.AUTHORIZATION, auth)
                 .get(String.class);
 
+        if(jsonNote == null){
+            return null;
+        }
         if(jsonNote.contains("\"code\":")){
             String errorDeskription = json.fromJson(jsonNote, AppError.class).description;
             throw new RuntimeException(errorDeskription);

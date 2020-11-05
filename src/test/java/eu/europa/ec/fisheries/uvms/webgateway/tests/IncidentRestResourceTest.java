@@ -43,6 +43,7 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
         System.clearProperty("MR_MODULE_REACHED");
         System.clearProperty("GET_ASSET_REACHED");
         System.clearProperty("UPDATE_ASSET_REACHED");
+        System.clearProperty("NOTE_RETURN_NULL");
     }
 
     @Test
@@ -150,6 +151,32 @@ public class IncidentRestResourceTest extends BuildStreamCollectorDeployment {
 
         Note outputNote = output.getRelatedObjects().getNotes().get(noteIncidentLog.get().getRelatedObjectId().toString());
         assertTrue(outputNote != null);
+
+    }
+
+    @Test
+    @OperateOnDeployment("collector")
+    public void getIncidentLogWithNoteThatDoesNotExist()  {
+        System.setProperty("NOTE_RETURN_NULL", "true");
+        Response response = getWebTarget()
+                .path("incidents")
+                .path("incidentLogForIncident")
+                .path("555")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(Response.class);
+
+        assertEquals(200, response.getStatus());
+        ExtendedIncidentLogDto output = response.readEntity(ExtendedIncidentLogDto.class);
+
+        assertFalse(output.getIncidentLogs().isEmpty());
+        assertTrue(output.getIncidentLogs().values().stream().allMatch(dto -> dto != null));
+        assertTrue(output.getIncidentLogs().values().stream().allMatch(dto -> dto.getIncidentId() == 555l));
+
+        Optional<IncidentLogDto> noteIncidentLog = output.getIncidentLogs().values().stream().filter(dto -> dto.getEventType().equals(EventTypeEnum.NOTE_CREATED)).findAny();
+        assertTrue(noteIncidentLog.isPresent());
+
+        assertTrue(output.getRelatedObjects().getNotes().isEmpty());
 
     }
 
