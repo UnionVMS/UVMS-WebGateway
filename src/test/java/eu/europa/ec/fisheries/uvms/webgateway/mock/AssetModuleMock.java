@@ -67,11 +67,14 @@ public class AssetModuleMock {
     @Path("asset/note/{id}")
     @RequiresFeature(UnionVMSFeature.manageVessels)
     public Response getNoteById(@PathParam("id") UUID id) {
-        Note note = new Note();
-        note.setId(id);
-        note.setAssetId(UUID.randomUUID());
-        note.setCreatedOn(Instant.now());
-        note.setNote("Asset module mock get note FTW");
+        Note note = null;
+        if(!System.getProperty("NOTE_RETURN_NULL", "false").equals("true")){
+            note = new Note();
+            note.setId(id);
+            note.setAssetId(UUID.randomUUID());
+            note.setCreatedOn(Instant.now());
+            note.setNote("Asset module mock get note FTW");
+        }
         return Response.ok(note).header("MDC", MDC.get("requestId")).build();
     }
 
