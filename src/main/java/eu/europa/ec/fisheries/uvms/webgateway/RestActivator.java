@@ -33,6 +33,7 @@ public class RestActivator extends Application {
         set.add(PollRestResource.class);
         set.add(ReportRestResource.class);
         set.add(IncidentRestResource.class);
+        set.add(StatisticsRestResource.class);
         set.add(JsonBConfiguratorWebGateway.class);
         set.add(WebGatewayRestExceptionMapper.class);
     }

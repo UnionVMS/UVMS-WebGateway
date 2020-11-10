@@ -155,4 +155,15 @@ public class AssetModuleMock {
         mt.setComment("Asset module mock get note FTW");
         return Response.ok(mt).header("MDC", MDC.get("requestId")).build();
     }
+
+    @GET
+    @Path("internal/assetStatistics")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response assetStatistics() {
+        AssetStatistics statistics = new AssetStatistics();
+        statistics.setAmountOfVMSAsset(42l);
+        statistics.setAmountOfVMSAssetsWithLicense(32l);
+        statistics.setAmountOfVMSAssetsWithInactiveLicense(10l);
+        return Response.ok(statistics).header("MDC", MDC.get("requestId")).build();
+    }
 }
