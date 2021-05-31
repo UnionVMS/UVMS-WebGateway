@@ -16,7 +16,7 @@
     <description>Module for listening on a topic and sending the messages on that topic on an sse stream</description>
 
     <properties>
-        <docker.dev.version>3.45.9</docker.dev.version>
+        <docker.dev.version>4.0.19</docker.dev.version>
         <usm4uvms.version>4.1.8</usm4uvms.version>
         <installAtEnd>false</installAtEnd>
 
