@@ -30,9 +30,9 @@ public class PollService {
     @Inject
     MovementRestClient movementClient;
 
-    public Map<UUID, PollInfoDto> getPollInformationForAssetInTheLastDay(UUID assetId){
+    public Map<String, PollInfoDto> getPollInformationForAssetInTheLastDay(UUID assetId){
         List<SanePollDto> pollsForAsset = assetClient.getPollsForAssetInTheLastDay(assetId);
-        Map<UUID, PollInfoDto> returnMap = new HashMap<>(pollsForAsset.size());
+        Map<String, PollInfoDto> returnMap = new HashMap<>(pollsForAsset.size());
 
         for (SanePollDto pollDto : pollsForAsset) {
             ExchangeLogStatusType pollStatus = exchangeClient.getPollStatus(pollDto.getId().toString());
@@ -44,7 +44,7 @@ public class PollService {
                 UUID movementId = UUID.fromString(pollStatus.getRelatedLogData().getRefGuid());
                 movement = movementClient.getMovementById(movementId);
             }
-            returnMap.put(pollDto.getId(), new PollInfoDto(pollDto, pollStatus, movement, mtAtDate));
+            returnMap.put(pollDto.getId().toString(), new PollInfoDto(pollDto, pollStatus, movement, mtAtDate));
         }
 
         return returnMap;
