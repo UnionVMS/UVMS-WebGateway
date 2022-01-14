@@ -33,7 +33,7 @@ public class PollRestResource {
     @RequiresFeature(UnionVMSFeature.viewVesselsAndMobileTerminals)
     public Response incidentLogForIncident(@Context HttpServletRequest request, @PathParam("assetId") UUID assetId)  {
         try{
-            Map<UUID, PollInfoDto> response = pollService.getPollInformationForAssetInTheLastDay(assetId);
+            Map<String, PollInfoDto> response = pollService.getPollInformationForAssetInTheLastDay(assetId);
             return Response.ok(response).build();
         }catch (Exception e){
             LOG.error("Error getting polls for asset {}: ", assetId ,e.getMessage(), e);
